@@ -1,25 +1,22 @@
 package com.heuristicSearch.main;
 
 import java.awt.Canvas;
-import com.heuristicSearch.main.Window;
+
+//import com.heuristicSearch.main.Window;
+import com.heuristicSearch.main.NewGrid;
 
 public class Search extends Canvas implements Runnable{
 
 	private static final long serialVersionUID = 1L;
-	public static final int WIDTH = 640, HEIGHT = WIDTH / 12 * 9;
-
-	public Search(){
-		new Window(WIDTH, HEIGHT, "Heuristic Search 8-way", this);
-		new DrawGrids(200, 200, 2, 10).setVisible(true);
+	public static final int WIDTH = 1280, HEIGHT = 960;
+	//Square[][] grid = new Square[120][160];
+	
+	public static void main(String args[]){
+		new NewGrid();
 	}
 
 	public void run() {
-		// TODO Auto-generated method stub
 		
-	}
-	
-	public static void main(String args[]){
-		new Search();
 	}
 
 }
