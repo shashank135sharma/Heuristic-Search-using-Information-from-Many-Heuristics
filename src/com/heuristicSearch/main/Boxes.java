@@ -1,36 +1,29 @@
 package com.heuristicSearch.main;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import javax.swing.JPanel;
 
 class Boxes extends JPanel {
 
     private static final long serialVersionUID = 1L;
-
-    @Override
-    public Dimension getMinimumSize() {
-        return new Dimension(8, 8);
+    public Vector2int square;
+    public Boxes parent;
+    public double fCost, gCost, hCost;
+    
+    //box objects on top of the grid GUI
+    public Boxes(){
+    	this.square = new Vector2int();
+    	this.parent = new Boxes();
+    	this.gCost = 0;
+    	this.hCost = 0;
+    	this.fCost = this.gCost + this.hCost;
     }
-
-    @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(10, 10);
+    
+    public Boxes(Vector2int square, Boxes parent, double gCost, double hCost){
+    	this.square = square;
+    	this.parent = parent;
+    	this.gCost = gCost;
+    	this.hCost = hCost;
+    	this.fCost = this.gCost + this.hCost;
     }
-
-    @Override
-    public Dimension getMaximumSize() {
-        return new Dimension(12, 12);
-    }
-
-    @Override
-    public void paintComponent(Graphics g) {
-        int margin = 1;
-        Dimension dim = getSize();
-        super.paintComponent(g);
-        g.setColor(Color.gray);
-        g.fillRect(margin, margin, dim.width - margin * 2, 
-           dim.height - margin * 2);
-    }
+    
 }
