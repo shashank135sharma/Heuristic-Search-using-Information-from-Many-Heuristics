@@ -12,6 +12,7 @@ public class Search extends Canvas implements Runnable{
 
 	private static final long serialVersionUID = 1L;
 	public static final int WIDTH = 1280, HEIGHT = 960; //width and height of frame
+	public NewGrid grid;
 	
 	//compares fCost for A* algorithm and picks the next box accordingly
 	private Comparator<Boxes> sorter = new Comparator<Boxes>(){
@@ -44,7 +45,7 @@ public class Search extends Canvas implements Runnable{
 			}
 			openList.remove(current);
 			closedList.add(current);
-			//looks throught he 9 boxes around you and including you, but skips you and the box you came from
+			//looks through he 9 boxes around you and including you, but skips you and the box you came from
 			for(int i = 0; i < 9; i++){
 				if(i==4) continue;
 				int x = current.square.getX();
@@ -86,7 +87,7 @@ public class Search extends Canvas implements Runnable{
 	//I haven't called the A* algorithm yet, just created a GUI of grids
 	//But I am confident it works I looked at many tutorials on youtube
 	public Search(){
-		new NewGrid();
+		grid = new NewGrid();
 	}
 	
 	public static void main(String args[]){
