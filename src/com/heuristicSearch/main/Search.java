@@ -74,22 +74,27 @@ public class Search extends Canvas implements Runnable{
 		PriorityQueue<Square> fringe = new PriorityQueue<Square>(sorter);
 		ArrayList<Square> closed = new ArrayList<Square>();
 		fringe.add(start);
-		start.squareInFringe();
+		start.isStart();
 		while(!fringe.isEmpty()) {
 			Square current = fringe.remove();
+			if(current.typeOfCell != '2' && current.typeOfCell != 'b') {
+				current.squareInFringe();
+			}
 			current.updateGVal(start);
 			current.updateHVal(goal);
 			
 			if(current.equals(goal) || getDistance(goal, current) < 1.41) {
+				double length = 0;
+				start.isStart();
 				while(!current.parent.equals(start)) {
 					current.tracePath();
+					length+=current.gCost;
 					current = current.parent;
 				}
-				System.out.println("Path Found");
+				System.out.println("Path Found With Length: "+length);
 				break;
 			}
 			closed.add(current);
-			current.squareInClosed();
 			for(int i=0; i<8; i++) {
 				if(current.neighbors[i] != null) {
 					Square sPrime = current.neighbors[i];
@@ -110,6 +115,9 @@ public class Search extends Canvas implements Runnable{
 					}
 				}
 			}
+			if(current.typeOfCell != '2' && current.typeOfCell != 'b') {
+				current.squareInClosed();
+			}
 		}
 		
 	}
@@ -125,8 +133,10 @@ public class Search extends Canvas implements Runnable{
 			sPrime.updateGVal(current);
 			sPrime.updateHVal(goal);
 			sPrime.getFCost();
+			if(sPrime.typeOfCell != '2' && sPrime.typeOfCell != 'b') {
+				sPrime.squareInFringe();
+			}
 			fringe.add(sPrime);
-			sPrime.squareInFringe();
 		}
 	}
 	

@@ -18,7 +18,6 @@ public class Square extends JPanel{
 	boolean isG = false; //Is goal node
 	boolean hasHighway = false; 
 	Square[] neighbors = new Square[8];
-	boolean highwayMovesHorizontally = false;
 	double gCost = 0;
 	double hCost = 0;
 	double fCost = this.gCost + this.hCost;
@@ -187,6 +186,23 @@ public class Square extends JPanel{
 	    	repaint();
 	    }
 	    
+	    public void isStart() {
+	    	this.currColor = "PINK";
+	    	repaint();
+	    }
+	    
+	    public void addHighway() {
+	    	hasHighway = true;
+	    	if(typeOfCell == '1') {
+	    		typeOfCell = 'a';
+	    		currColor = setColor(typeOfCell);
+	    		
+	    	} else if(this.typeOfCell == '2') {
+	    		typeOfCell = 'b'; 
+	    		currColor = setColor(typeOfCell);
+	    	}
+	    }
+	    
 	    //main GUI stuff to paint the squares to appropriate color and size on grid
 	    public void paintComponent(Graphics g) {
 	        int margin = 1;
@@ -202,6 +218,7 @@ public class Square extends JPanel{
 	        if(currColor == "RED") g.setColor(Color.red);
 	        if(currColor == "GREEN") g.setColor(Color.green);
 	        if(currColor == "YELLOW") g.setColor(Color.yellow);
+	        
 	        g.fillRect(margin, margin, dim.width-1, dim.height-1);
 	    }
 

@@ -35,6 +35,66 @@ public class NewGrid{
 	        
 	    }
 	    
+	    private Square[][] addUBHighways(Square[][] grid) {
+	    	Square[][] copy = new Square[row][column];
+	    	copy = copyGridInto(copy, grid);
+	    	int random = (int) Math.floor(Math.random()*100);
+	    	int startX, startY;
+	    	if(random>75) {
+	    		random = (int) Math.floor(Math.random()*50);
+	    		if(random>40) { //Start from left wall and move right
+	    			int startVal = (int)Math.random()*120;
+	    			for(int i=0; i<20; i++) {
+	    				copy[startVal][i].addHighway();
+	    			}
+	    			random = (int) Math.random()*100;
+	    			if(random>40) { //Keep moving right
+		    			for(int i=19; i<40; i++) {
+		    				copy[startVal][i].addHighway();
+		    			}
+	    			} else if(random >20 && random<=40) { //move up
+	    				for(int i=startVal; i>startVal-20; i--) {
+	    					if(i>=0) {
+	    						if(copy[startVal][19].hasHighway){
+	    							return null;
+	    						}
+	    						copy[startVal][19].addHighway();
+	    					}
+	    				}
+	    			} else { //move down
+	    				for(int i=startVal; i<startVal+20; i++) {
+	    					if(i<=120) {
+	    						if(copy[startVal][19].hasHighway) {
+	    							return null;
+	    						}
+	    						copy[startVal][19].addHighway();
+	    					}
+	    				}
+	    			}
+	    		} else if(random>20 && random<=40){ //left wall moving up
+	    			
+	    		} else { //left wall moving down
+	    			
+	    		}
+	    	} else if(random>50 && random<=75) {
+	    		
+	    	} else if(random>25 && random<=50) {
+	    		
+	    	} else {
+	    		
+	    	}
+	    	return copy;
+	    }
+	    
+	    private Square[][] copyGridInto(Square[][] copy, Square[][] grid) {
+	    	for(int i=0; i<grid.length; i++) {
+	    		for(int j=0; j<grid[0].length; j++) {
+	    			copy[i][j] = grid[i][j];
+	    		}
+	    	}
+	    	return copy;
+	    }
+	    
 		public NewGrid(File inputFile) throws FileNotFoundException {
 			Scanner sc = new Scanner(inputFile);
 			Square[] hardToTraverseCenters = new Square[8];
