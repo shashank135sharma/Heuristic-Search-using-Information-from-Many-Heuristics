@@ -182,6 +182,11 @@ public class Square extends JPanel{
 	    	repaint();
 	    }
 	    
+	    public void tracePath() {
+	    	this.currColor = "YELLOW";
+	    	repaint();
+	    }
+	    
 	    //main GUI stuff to paint the squares to appropriate color and size on grid
 	    public void paintComponent(Graphics g) {
 	        int margin = 1;
@@ -196,6 +201,7 @@ public class Square extends JPanel{
 	        if(currColor == "PURPLE") g.setColor(new Color(255,0,255));			//GOAL
 	        if(currColor == "RED") g.setColor(Color.red);
 	        if(currColor == "GREEN") g.setColor(Color.green);
+	        if(currColor == "YELLOW") g.setColor(Color.yellow);
 	        g.fillRect(margin, margin, dim.width-1, dim.height-1);
 	    }
 

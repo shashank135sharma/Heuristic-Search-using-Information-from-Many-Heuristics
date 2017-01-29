@@ -81,6 +81,10 @@ public class Search extends Canvas implements Runnable{
 			current.updateHVal(goal);
 			
 			if(current.equals(goal) || getDistance(goal, current) < 1.41) {
+				while(!current.parent.equals(start)) {
+					current.tracePath();
+					current = current.parent;
+				}
 				System.out.println("Path Found");
 				break;
 			}
