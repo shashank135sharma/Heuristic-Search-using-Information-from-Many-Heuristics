@@ -13,9 +13,6 @@ class Boxes extends JPanel {
     public Boxes(){
     	this.square = new Vector2int();
     	this.parent = new Boxes();
-    	this.gCost = 0;
-    	this.hCost = 0;
-    	this.fCost = this.gCost + this.hCost;
     }
     
     public Boxes(Vector2int square, Boxes parent, double gCost, double hCost){
@@ -25,5 +22,7 @@ class Boxes extends JPanel {
     	this.hCost = hCost;
     	this.fCost = this.gCost + this.hCost;
     }
+    
+    
     
 }
