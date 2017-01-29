@@ -112,147 +112,6 @@ public class NewGrid{
 	    	}
 	    }
 	    
-	    //still needs to hit boundary and have length of 100 min and restart if it hits a path
-	    //and need to check if going out of bounds on any turn or extension
-	    //sets 4 random 20 cell unblocked highways in the grid from a boundary
-//	    private void addUBHighways(){
-//	    	coordinates.clear();
-//	    	int wall;
-//	    	for(int i = 0; i < 4; i++){
-//	    		wall = random(0, 3);
-//	    		if(wall == 0) { Vector2int coordinate = new Vector2int(random(1,119), 0); coordinates.add(coordinate);}
-//	    		if(wall == 1) { Vector2int coordinate = new Vector2int(119, random(1, 159)); coordinates.add(coordinate);}
-//	    		if(wall == 2) { Vector2int coordinate = new Vector2int(random(1,119), 159); coordinates.add(coordinate);}
-//	    		if(wall == 3) { Vector2int coordinate = new Vector2int(0, random(1,159)); coordinates.add(coordinate);}
-//	    	}
-//	    	int rx;
-//	    	int ry;
-//	    	for(Vector2int n : coordinates){
-//	    		rx = n.getX();
-//	    		ry = n.getY();
-//	    		System.out.println(rx +" , " + ry);
-//	    		//on north wall
-//	    		if(rx == 0){ 
-//		    		if(randomPercent(50) == true){//away from boundary
-//		    			riverHelper(rx,ry,'s',20,'a');
-//		    		}else{
-//		    			if(randomPercent(50) == true){//right
-//		    				riverHelper(rx,ry,'w',20,'a');
-//		    			}else{//left
-//		    				riverHelper(rx,ry,'e',20,'a');
-//		    			}
-//		    		}
-//	    		}
-//	    		//on east wall
-//	    		if(ry == 159){ 
-//	    			if(randomPercent(50) == true){//away from boundary
-//		    			riverHelper(rx,ry,'w',20,'a');
-//		    		}else{
-//		    			if(randomPercent(50) == true){//right
-//		    				riverHelper(rx,ry,'n',20,'a');
-//		    			}else{//left
-//		    				riverHelper(rx,ry,'s',20,'a');
-//		    			}
-//		    		}
-//	    		}
-//	    		//on south wall	
-//	    		if(rx == 119){ 
-//	    			if(randomPercent(50) == true){//away from boundary
-//		    			riverHelper(rx,ry,'n',20,'a');
-//		    		}else{
-//		    			if(randomPercent(50) == true){//right
-//		    				riverHelper(rx,ry,'e',20,'a');
-//		    			}else{//left
-//		    				riverHelper(rx,ry,'w',20,'a');
-//		    			}
-//		    		}
-//	    		}
-//	    		//on west wall
-//	    		if(ry == 0){ 
-//	    			if(randomPercent(50) == true){//away from boundary
-//		    			riverHelper(rx,ry,'e',20,'a');
-//		    		}else{
-//		    			if(randomPercent(50) == true){//right
-//		    				riverHelper(rx,ry,'s',20,'a');
-//		    			}else{//left
-//		    				riverHelper(rx,ry,'n',20,'a');
-//		    			}
-//		    		}
-//	    		}
-//	    	}
-//	    	
-//	    }
-//	    //moves as specified in the guidelines (20, the 60% same 20 or 20% perp 20 in direction specified)
-//	    private void riverHelper(int rx, int ry, char direction, int length, char type){
-//	    	if(direction == 'n' || direction == 'N'){
-//	    		travel(rx, ry, 'n', length, type);
-//		    	if(randomPercent(60) == true){
-//					travel(rx-20, ry, 'n', length, type);
-//				}else if(randomPercent(20) == true){
-//	    			if(randomPercent(50) == true){
-//	    				travel(rx-20, ry, 'e', length, type);
-//	    			}else{
-//	    				travel(rx-20, ry, 'w', length, type);
-//	    			}
-//				}
-//	    	}
-//	    	if(direction == 'e' || direction == 'E'){
-//	    		travel(rx, ry, 'e', length, type);
-//		    	if(randomPercent(60) == true){
-//					travel(rx, ry+20, 'e', length, type);
-//				}else if(randomPercent(20) == true){
-//	    			if(randomPercent(50) == true){
-//	    				travel(rx, ry+20, 'n', length, type);
-//	    			}else{
-//	    				travel(rx, ry+20, 's', length, type);
-//	    			}
-//				}
-//	    	}
-//	    	if(direction == 's' || direction == 'S'){
-//	    		travel(rx, ry, 's', length, type);
-//		    	if(randomPercent(60) == true){
-//					travel(rx+20, ry, 's', length, type);
-//				}else if(randomPercent(20) == true){
-//	    			if(randomPercent(50) == true){
-//	    				travel(rx+20, ry, 'e', length, type);
-//	    			}else{
-//	    				travel(rx+20, ry, 'w', length, type);
-//	    			}
-//				}
-//	    	}
-//	    	if(direction == 'w' || direction == 'W'){
-//	    		travel(rx, ry, 'w', length, type);
-//		    	if(randomPercent(60) == true){
-//					travel(rx, ry-20, 'w', length, type);
-//				}else if(randomPercent(20) == true){
-//	    			if(randomPercent(50) == true){
-//	    				travel(rx, ry-20, 'n', length, type);
-//	    			}else{
-//	    				travel(rx, ry-20, 's', length, type);
-//	    			}
-//				}
-//	    	}
-//	    }
-//	    //moves specified distance in direction and marks as type
-//	    private void travel(int x, int y, char direction, int length, char type){
-//		  if(direction == 'n' || direction == 'N'){
-//			  for (int i = 0; i < length; i++) {
-//					squares[x-i][y].currColor = Square.setColor(type);
-//			  }  
-//		  }else if(direction == 'e' || direction == 'E'){
-//			  for (int i = 0; i < length; i++) {
-//					squares[x][y+i].currColor = Square.setColor(type);
-//			  }  
-//		  }else if(direction == 's' || direction == 'S'){
-//			  for (int i = 0; i < length; i++) {
-//					squares[x+i][y].currColor = Square.setColor(type);
-//			  }  
-//		  }else if(direction == 'w' || direction == 'W'){
-//			  for (int i = 0; i < length; i++) {
-//					squares[x][y-i].currColor = Square.setColor(type);
-//			  }  
-//		  }
-//	  }
 	  //adds 3840 blocks randomly with 12% chance is the best number to cover the grid
 	  private void addBlockedObstacles(){
 		  int count = 0;
@@ -263,6 +122,7 @@ public class NewGrid{
 						  if(squares[i][j].currColor != "BLUE"){
 							  if(count >= 3840) continue;
 							  squares[i][j].currColor = Square.setColor('0');
+							  squares[i][j].typeOfCell = '0';
 							  count++;
 						  }
 					  }
@@ -365,56 +225,55 @@ public class NewGrid{
 	    			if(i-1>=0 && j-1>=0) {
 	    				if(grid[i-1][j-1].typeOfCell != '0') {
 	    					grid[i][j].neighbors[0] = grid[i-1][j-1];
+		    				counter++;
 	    				}
-	    				counter++;
 	    			}
 	    			if(i-1>=0) {
 	    				if(grid[i-1][j].typeOfCell != '0') {
 	    					grid[i][j].neighbors[1] = grid[i-1][j];
+		    				counter++;
 	    				}
-	    				counter++;
 	    			}
 	    			if(i-1>=0 && j+1 < grid[0].length) {
 	    				if(grid[i-1][j+1].typeOfCell != '0') {
 	    				grid[i][j].neighbors[2] = grid[i-1][j+1];
-	    				}	
 	    				counter++;
+	    				}	
 	    			}
 	    			if( j+1 < grid[0].length) {
 	    				if(grid[i][j+1].typeOfCell != '0') {
 	    					grid[i][j].neighbors[3] = grid[i][j+1];
+		    				counter++;
 	    				}
-	    				counter++;
 	    			}
 	    			if(i+1 < grid.length && j+1<grid[0].length) {
 	    				if(grid[i+1][j+1].typeOfCell != '0') {
 	    					grid[i][j].neighbors[4] = grid[i+1][j+1];
+		    				counter++;
 	    				}
-	    				counter++;
 	    			}
 	    			if(i+1 < grid.length) {
 	    				if(grid[i+1][j].typeOfCell != '0') {
 	    					grid[i][j].neighbors[5] = grid[i+1][j];
+		    				counter++;
 	    				}
-	    				counter++;
 	    			}
 	    			if(i+1<grid.length && j-1>=0) {
 	    				if(grid[i+1][j-1].typeOfCell != '0') {
 	    					grid[i][j].neighbors[6] = grid[i+1][j-1];
+		    				counter++;
 	    				}
-	    				counter++;
 	    			}
 	    			if(j-1>=0) {
 	    				if(grid[i][j-1].typeOfCell != '0') {
 	    					grid[i][j].neighbors[3] = grid[i][j-1];
+		    				counter++;
 	    				}
-	    				counter++;
 	    			}
 	    		}
 	    	}
 	    	return grid;
 	    }
-	    
 
 		private static Square[][] createHardToTraverseWithCenter(int x, int y, Square[][] cellArray) {
 			int topX=x-16, topY = y-16, botX = x+14, botY = y+14;

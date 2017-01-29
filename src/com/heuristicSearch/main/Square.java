@@ -11,7 +11,7 @@ public class Square extends JPanel{
 	public char color;
 	public double moveXY;		//1 w-w, 2 g-g, 1.5 w-g/g-w |||||||||| WITH HIGHWAY 0.25 lb-lb, 0.5 db-db, 0.375 lb-db/dblbw
 	public double moveDiag; //1.41 w-w, 2.83 g-g, 2.12 w-g/g-w ||||||| WITH HIGHWAY 0.35 lb-lb, 0.71 db-db, 0.53 lb-db/dblbw
-	public String currColor;																	//for lb=db/db-lb use getAvg
+	public String currColor;														//for lb=db/db-lb use getAvg
 	char typeOfCell = '1';
 	int x, y;
 	boolean isS = false; //Is start node
@@ -19,7 +19,7 @@ public class Square extends JPanel{
 	boolean hasHighway = false; 
 	Square[] neighbors = new Square[8];
 	boolean highwayMovesHorizontally = false;
-	double gCost = Double.MAX_VALUE;
+	double gCost = 0;
 	double hCost = 0;
 	double fCost = this.gCost + this.hCost;
 	Square parent = null;

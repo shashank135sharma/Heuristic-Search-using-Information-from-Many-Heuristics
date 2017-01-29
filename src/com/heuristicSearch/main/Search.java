@@ -18,8 +18,8 @@ public class Search extends Canvas implements Runnable{
 	//compares fCost for A* algorithm and picks the next box accordingly
 	private Comparator<Square> sorter = new Comparator<Square>(){
 		public int compare(Square b1, Square b2) {
-			if(b1.getFCost() < b2.getFCost()) return 1;
-			if(b1.getFCost() > b2.getFCost()) return -1;
+			if(b1.getFCost() < b2.getFCost()) return -1;
+			if(b1.getFCost() > b2.getFCost()) return 1;
 			return 0;
 		}
 	};
@@ -74,32 +74,36 @@ public class Search extends Canvas implements Runnable{
 		PriorityQueue<Square> fringe = new PriorityQueue<Square>(sorter);
 		ArrayList<Square> closed = new ArrayList<Square>();
 		fringe.add(start);
-		
+		start.squareInFringe();
 		while(!fringe.isEmpty()) {
 			Square current = fringe.remove();
-			current.squareInFringe();
 			current.updateGVal(start);
 			current.updateHVal(goal);
 			
-			if(current.equals(goal)) {
-				System.out.println("Path found");
+			if(current.equals(goal) || getDistance(goal, current) < 1.41) {
+				System.out.println("Path Found");
 				break;
 			}
 			closed.add(current);
+			current.squareInClosed();
 			for(int i=0; i<8; i++) {
-				System.out.println("Outside");
 				if(current.neighbors[i] != null) {
-					System.out.println("Inside");
 					Square sPrime = current.neighbors[i];
-					sPrime.squareInClosed();
-					sPrime.updateGVal(start);
-					sPrime.updateHVal(goal);
-					if(doesClosedContain(sPrime, closed)) {
-						if(doesFringeContain(sPrime, fringe)) {
-							current.gCost = Double.MAX_VALUE;
+					if(!doesClosedContain(sPrime, closed)) {
+						if(!doesFringeContain(sPrime, fringe)) {
+							sPrime.gCost = Double.MAX_VALUE;
+							sPrime.getFCost();
+							fringe.remove(sPrime);
+							fringe.add(sPrime);
+							sPrime.parent = null;
 						}
+						try {
+						    Thread.sleep(1);
+						} catch(InterruptedException ex) {
+						    Thread.currentThread().interrupt();
+						}
+						updateVertex(current,sPrime, start, goal, i, fringe);
 					}
-					updateVertex(current,sPrime, start, goal, i, fringe);
 				}
 			}
 		}
@@ -107,22 +111,22 @@ public class Search extends Canvas implements Runnable{
 	}
 	
 	private void updateVertex(Square current, Square sPrime, Square start, Square goal, int index, PriorityQueue<Square> fringe) {
-		System.out.println("Vertices updated");
-		System.out.println("Update Vertex: " + (current.gCost + getCVal(current, sPrime, index)));
 		if(current.gCost + getCVal(current, sPrime, index) < sPrime.gCost) {
 			sPrime.gCost = current.gCost + getCVal(current,sPrime, index);
+			sPrime.getFCost();
 			sPrime.parent = current;
 			if(doesFringeContain(sPrime, fringe)) {
 				fringe.remove(sPrime);
 			}
-			sPrime.updateGVal(start);
+			sPrime.updateGVal(current);
 			sPrime.updateHVal(goal);
 			sPrime.getFCost();
 			fringe.add(sPrime);
+			sPrime.squareInFringe();
 		}
 	}
 	
-	private double getCVal(Square current, Square sPrime, int index) {
+	public double getCVal(Square current, Square sPrime, int index) {
 		if(index%2 == 0) {
 			if (current.typeOfCell =='1' && sPrime.typeOfCell == '2') {
 				return (Math.sqrt(2) + Math.sqrt(8))/2;
@@ -183,7 +187,6 @@ public class Search extends Canvas implements Runnable{
 	//But I am confident it works I looked at many tutorials on youtube
 	public Search(){
 		grid = new NewGrid();
-		System.out.println("grid: "+grid.sGoal.x + " " + grid.sGoal.y);
 		aStarFindPath(grid.sStart, grid.sGoal);
 	}
 	
