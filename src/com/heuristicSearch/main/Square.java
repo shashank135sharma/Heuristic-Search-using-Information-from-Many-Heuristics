@@ -3,6 +3,7 @@ package com.heuristicSearch.main;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+
 import javax.swing.JPanel;
 
 public class Square extends JPanel{
@@ -22,7 +23,8 @@ public class Square extends JPanel{
 	double hCost = 0;
 	double fCost = this.gCost + this.hCost;
 	Square parent = null;
-
+	Dimension dim = getSize();
+	public double dimW = dim.getHeight();
 	
 	//default to white
 	public Square(){
@@ -121,7 +123,7 @@ public class Square extends JPanel{
 	public static String setColor(char color){
 		switch(color) {
 		case '0':
-			return "BLACk";
+			return "BLACK";
 		case '1':
 			return "WHITE";
 		case '2':
@@ -172,13 +174,13 @@ public class Square extends JPanel{
 	    }
 	    
 	    public void squareInFringe() {
-	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b')
+	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b' && this.currColor != "GOLD" && !isS && !isG)
 	    		this.currColor = "RED";
 	    	repaint();
 	    }
 	    
 	    public void squareInClosed() {
-	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b')
+	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b' && this.currColor != "GOLD" && !isS && !isG)
 	    		this.currColor = "GREEN";
 	    	repaint();
 	    }
@@ -230,13 +232,13 @@ public class Square extends JPanel{
 	        if(currColor == "BLACK") g.setColor(Color.black);					//blocked cell
 	        if(currColor == "LIGHT_BLUE") g.setColor(Color.blue.brighter());	//Regular unblocked with highway
 	        if(currColor == "DARK_BLUE") g.setColor(Color.blue.darker());		//Hard to traverse with highway
-	        if(currColor == "PINK") g.setColor(new Color(255,20,147));						//START
+	        if(currColor == "PINK") g.setColor(new Color(255,20,147));		    //START
 	        if(currColor == "PURPLE") g.setColor(new Color(255,0,255));			//GOAL
 	        if(currColor == "RED") g.setColor(Color.red);
 	        if(currColor == "GREEN") g.setColor(Color.green);
 	        if(currColor == "YELLOW") g.setColor(Color.yellow);
 	        
-	        g.fillRect(margin, margin, dim.width-1, dim.height-1);
+	        g.fillRect(margin, margin, dim.height, dim.height);
 	    }
 
 		public void changeTypeOfCell(char c) {

@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.StringTokenizer;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.swing.*;
 
@@ -28,11 +26,15 @@ public class NewGrid{
 		    addsquares();
 	    	addHTTObstacles();
 			addUBHighways(squares);
-
 	    	addBlockedObstacles();
 	    	addSandG();
 	    	squares = setNeighbors(squares);
 	    	panel.setLayout(new GridLayout(row, column));
+	    	Listenerclass listener = new Listenerclass();
+	        panel.addMouseListener(listener);
+	        //frame.setSize(640, 480);
+	        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+	        frame.setResizable(false);
 	    	frame.add(panel);
 	    	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    	frame.pack();
@@ -357,32 +359,11 @@ public class NewGrid{
 	    	}
 	    }
 	    
-	    private Square[][] copyGridInto(Square[][] copy, Square[][] grid) {
-	    	for(int i=0; i<grid.length; i++) {
-	    		for(int j=0; j<grid[0].length; j++) {
-	    			Square curr = grid[i][j];
-	    			curr = new Square(curr.color, curr.x, curr.y, curr.isS, curr.isG);
-	    			copy[i][j] = curr;
-	    		}
-	    	}
-	    	return copy;
-	    }
-	    
-	    private Square[][] copyGridInto2(Square[][] copy, Square[][] grid) {
-	    	for(int i=0; i<grid.length; i++) {
-	    		for(int j=0; j<grid[0].length; j++) {
-	    			Square curr = grid[i][j];
-	    			copy[i][j] = curr;
-	    		}
-	    	}
-	    	return copy;
-	    }
-
-	    
+    
 		public NewGrid(File inputFile) throws FileNotFoundException {
 			Scanner sc = new Scanner(inputFile);
 			Square[] hardToTraverseCenters = new Square[8];
-			squares = new Square[121][160];
+			squares = new Square[row][column];
 			
 			//Get start and goal coords
 			StringTokenizer st = new StringTokenizer(sc.nextLine(), ",()\n");
@@ -397,8 +378,8 @@ public class NewGrid{
 			}
 			
 			
-			for(int i=0; i<121; i++) {
-				for(int j=0; j<160; j++) {
+			for(int i=0; i<row; i++) {
+				for(int j=0; j<column; j++) {
 					squares[i][j] = new Square(sc.next().charAt(0), i, j, false, false);
 				}
 			}
@@ -410,6 +391,7 @@ public class NewGrid{
 				squares = createHardToTraverseWithCenter(hardToTraverseCenters[i].x, hardToTraverseCenters[i].y, squares);
 			}
 			squares = setNeighbors(squares);
+			sc.close();
 			
 		}
 	    
@@ -531,7 +513,7 @@ public class NewGrid{
 			return randomNum;
 			
 	    }
-	    //returns probability of planding below specified percent
+	    //returns probability of landing below specified percent
 	    public boolean randomPercent(double percent){
 	    	double per = percent/10;
 	    	int ran = random(0, 10);
@@ -556,59 +538,49 @@ public class NewGrid{
 	    
 		//Creates the graph data structure by adding each square's neighbors
 	    private Square[][] setNeighbors(Square[][] grid) {
-	    	int counter = 0;
 	    	for(int i=0; i<grid.length; i++) {
 	    		for(int j=0; j<grid[0].length; j++) {
-	    			counter = 0;
 	    			for(int k=0; k<8; k++) {
 	    				grid[i][j].neighbors[k] = null;
 	    			}
 	    			if(i-1>=0 && j-1>=0) {
 	    				if(grid[i-1][j-1].typeOfCell != '0') {
 	    					grid[i][j].neighbors[0] = grid[i-1][j-1];
-		    				counter++;
 	    				}
 	    			}
 	    			if(i-1>=0) {
 	    				if(grid[i-1][j].typeOfCell != '0') {
 	    					grid[i][j].neighbors[1] = grid[i-1][j];
-		    				counter++;
 	    				}
 	    			}
 	    			if(i-1>=0 && j+1 < grid[0].length) {
 	    				if(grid[i-1][j+1].typeOfCell != '0') {
 	    				grid[i][j].neighbors[2] = grid[i-1][j+1];
-	    				counter++;
 	    				}	
 	    			}
 	    			if( j+1 < grid[0].length) {
 	    				if(grid[i][j+1].typeOfCell != '0') {
 	    					grid[i][j].neighbors[3] = grid[i][j+1];
-		    				counter++;
 	    				}
 	    			}
 	    			if(i+1 < grid.length && j+1<grid[0].length) {
 	    				if(grid[i+1][j+1].typeOfCell != '0') {
 	    					grid[i][j].neighbors[4] = grid[i+1][j+1];
-		    				counter++;
 	    				}
 	    			}
 	    			if(i+1 < grid.length) {
 	    				if(grid[i+1][j].typeOfCell != '0') {
 	    					grid[i][j].neighbors[5] = grid[i+1][j];
-		    				counter++;
 	    				}
 	    			}
 	    			if(i+1<grid.length && j-1>=0) {
 	    				if(grid[i+1][j-1].typeOfCell != '0') {
 	    					grid[i][j].neighbors[6] = grid[i+1][j-1];
-		    				counter++;
 	    				}
 	    			}
 	    			if(j-1>=0) {
 	    				if(grid[i][j-1].typeOfCell != '0') {
 	    					grid[i][j].neighbors[3] = grid[i][j-1];
-		    				counter++;
 	    				}
 	    			}
 	    		}
