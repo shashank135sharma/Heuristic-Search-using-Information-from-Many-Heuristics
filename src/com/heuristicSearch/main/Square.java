@@ -172,12 +172,14 @@ public class Square extends JPanel{
 	    }
 	    
 	    public void squareInFringe() {
-	    	this.currColor = "RED";
+	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b')
+	    		this.currColor = "RED";
 	    	repaint();
 	    }
 	    
 	    public void squareInClosed() {
-	    	this.currColor = "GREEN";
+	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b')
+	    		this.currColor = "GREEN";
 	    	repaint();
 	    }
 	    
@@ -192,15 +194,30 @@ public class Square extends JPanel{
 	    }
 	    
 	    public void addHighway() {
-	    	hasHighway = true;
 	    	if(typeOfCell == '1') {
+		    	hasHighway = true;
 	    		typeOfCell = 'a';
 	    		currColor = setColor(typeOfCell);
 	    		
 	    	} else if(this.typeOfCell == '2') {
+		    	hasHighway = true;
 	    		typeOfCell = 'b'; 
 	    		currColor = setColor(typeOfCell);
 	    	}
+	    	repaint();
+	    }
+	    
+	    public void removeHighway() {
+	    	if(typeOfCell == 'a') {
+	    		hasHighway = false;
+	    		typeOfCell = '1';
+	    		currColor = setColor(typeOfCell);
+	    	} else if(typeOfCell == 'b') {
+	    		hasHighway = false;
+	    		typeOfCell = '1';
+	    		currColor = setColor(typeOfCell);
+	    	}
+	    	repaint();
 	    }
 	    
 	    //main GUI stuff to paint the squares to appropriate color and size on grid

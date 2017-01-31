@@ -1,8 +1,12 @@
 package com.heuristicSearch.main;
 
 import java.awt.Canvas;
+import java.awt.EventQueue;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -69,6 +73,7 @@ public class Search extends Canvas implements Runnable{
 //	}
 	
 	public void aStarFindPath(Square start, Square goal) {
+		System.out.println("A* started");
 		start.gCost = 0;
 		start.parent = start;
 		PriorityQueue<Square> fringe = new PriorityQueue<Square>(sorter);
@@ -143,19 +148,43 @@ public class Search extends Canvas implements Runnable{
 	public double getCVal(Square current, Square sPrime, int index) {
 		if(index%2 == 0) {
 			if (current.typeOfCell =='1' && sPrime.typeOfCell == '2') {
-				return (Math.sqrt(2) + Math.sqrt(8))/2;
+				if(current.hasHighway && sPrime.hasHighway) {
+					return ((Math.sqrt(2) + Math.sqrt(8))/2)/4;
+				} else {
+					return (Math.sqrt(2) + Math.sqrt(8))/2;
+				}
 			} else if(current.typeOfCell == '1' && sPrime.typeOfCell == '1'){
-				return Math.sqrt(2);
+				if(current.hasHighway && sPrime.hasHighway) {
+					return Math.sqrt(2)/4;
+				} else {
+					return Math.sqrt(2);
+				}
 			} else{ 
-				return Math.sqrt(8);
+				if(current.hasHighway && sPrime.hasHighway) {
+					return Math.sqrt(8)/4;
+				} else {
+					return Math.sqrt(8);
+				}
 			}
 		} else {
 			if (current.typeOfCell =='1' && sPrime.typeOfCell == '2') {
-				return 1.5;
+				if(current.hasHighway && sPrime.hasHighway) {
+					return 1.5/4;
+				} else {
+					return 1.5;
+				}
 			} else if(current.typeOfCell == '1' && sPrime.typeOfCell == '1'){
-				return 1;
+				if(current.hasHighway && sPrime.hasHighway) {
+					return 1/4;
+				} else {
+					return 1;
+				}
 			} else{ 
-				return 2;
+				if(current.hasHighway && sPrime.hasHighway) {
+					return 2/4;
+				} else {
+					return 2;
+				}			
 			}
 			
 		}
@@ -199,12 +228,12 @@ public class Search extends Canvas implements Runnable{
 	//main call and search method which creates a grid behind the boxes.
 	//I haven't called the A* algorithm yet, just created a GUI of grids
 	//But I am confident it works I looked at many tutorials on youtube
-	public Search(){
+	public Search() throws InvocationTargetException, InterruptedException{
 		grid = new NewGrid();
 		aStarFindPath(grid.sStart, grid.sGoal);
 	}
 	
-	public static void main(String args[]){
+	public static void main(String args[]) throws InvocationTargetException, InterruptedException{
 		new Search();
 	}
 	

@@ -4,101 +4,385 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.*;
 
 //Visual for the GRID
 public class NewGrid{
 	
-		static int row = 120;
+		static int row = 121;
 	    static int column = 160;
 	    private JFrame frame = new JFrame();
 	    private JPanel panel = new JPanel();
 	    public static Square [][] squares = new Square [row][column];
 	    Square sStart, sGoal;
+	    int numHighways = 0;
 	    
 	    //makes the grid with specifications listed
 	    public NewGrid() {
-	        addsquares();
-	        addHTTObstacles();
-	        addBlockedObstacles();
-	        //addUBHighways();
-	        addSandG();
-	        squares = setNeighbors(squares);
-	        panel.setLayout(new GridLayout(row, column));
-	        frame.add(panel);
-	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	        frame.pack();
-	        frame.setVisible(true);
-	        
+		    addsquares();
+	    	addHTTObstacles();
+			addUBHighways(squares);
+
+	    	addBlockedObstacles();
+	    	addSandG();
+	    	squares = setNeighbors(squares);
+	    	panel.setLayout(new GridLayout(row, column));
+	    	frame.add(panel);
+	    	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    	frame.pack();
+	    	frame.setVisible(true);
+
+
 	    }
 	    
 	    private Square[][] addUBHighways(Square[][] grid) {
-	    	Square[][] copy = new Square[row][column];
-	    	copy = copyGridInto(copy, grid);
-	    	int random = (int) Math.floor(Math.random()*100);
-	    	int startX, startY;
-	    	if(random>75) {
-	    		random = (int) Math.floor(Math.random()*50);
-	    		if(random>40) { //Start from left wall and move right
-	    			int startVal = (int)Math.random()*120;
-	    			for(int i=0; i<20; i++) {
-	    				copy[startVal][i].addHighway();
-	    			}
-	    			random = (int) Math.random()*100;
-	    			if(random>40) { //Keep moving right
-		    			for(int i=19; i<40; i++) {
-		    				copy[startVal][i].addHighway();
-		    			}
-	    			} else if(random >20 && random<=40) { //move up
-	    				for(int i=startVal; i>startVal-20; i--) {
-	    					if(i>=0) {
-	    						if(copy[startVal][19].hasHighway){
-	    							return null;
-	    						}
-	    						copy[startVal][19].addHighway();
-	    					}
-	    				}
-	    			} else { //move down
-	    				for(int i=startVal; i<startVal+20; i++) {
-	    					if(i<=120) {
-	    						if(copy[startVal][19].hasHighway) {
-	    							return null;
-	    						}
-	    						copy[startVal][19].addHighway();
-	    					}
-	    				}
-	    			}
-	    		} else if(random>20 && random<=40){ //left wall moving up
-	    			
-	    		} else { //left wall moving down
-	    			
+	    	for(int i=0; i<4; i++) {
+	    		Square[][] copy = grid;
+	    		while(!randomWalls(copy));
+	    		grid = copy;
+	    	}
+	    	return grid;
+	    }
+	    
+	    private boolean randomWalls(Square[][] grid) {
+	    	int random;
+	    	Random rand = new Random();
+	    	random = rand.nextInt(100);
+	    	
+	    	if(random>75) { //Origin is left wall
+	    		if(leftWall(grid)) {
+	    		} else {
+	    			return false;
 	    		}
 	    	} else if(random>50 && random<=75) {
-	    		
-	    	} else if(random>25 && random<=50) {
-	    		
-	    	} else {
-	    		
+	    		if(rightWall(grid)) {//Origin is right wall
+	    		} else {
+	    			return false;
+	    		}
+	    	} else if(random>25 && random<=50) {//Origin is top wall
+	    		if(topWall(grid)) {
+	    		} else {
+	    			return false;
+	    		}
+	    	} else {//Origin is bottom wall
+	    		if(bottomWall(grid)) {
+	    		} else {
+	    			return false;
+	    		}
 	    	}
-	    	return copy;
+	    	return true;
+	    }
+	    
+	    
+	    private static boolean isSquareBoundry(int x, int y) {
+	    	if(x-1 < 0 || x+1>121 || y-1 < 0 || y+1 > 160) {
+	    		return true;
+	    	}
+	    	return false;
+	    }
+	    
+	    private void removeHighways(ArrayList<Square> currentPath, Square[][] grid) {
+	    	for(Square sq: currentPath) {
+	    		grid[sq.x][sq.y].removeHighway();
+	    	}
+	    }
+	    
+	    private boolean leftWall(Square[][] grid) {
+	    	Random rand = new Random();
+	    	int randX = rand.nextInt(121);
+	    	int randY = 0;
+	    	int random;
+	    	ArrayList<Square> currentPath = new ArrayList<Square>();
+	    	for(int i=0; i<21; i++) {
+	    		if(!grid[randX][randY].hasHighway) {
+		    		grid[randX][randY].addHighway();
+		    		currentPath.add(grid[randX][randY]);
+		    		randY++;
+	    		} else {
+	    			removeHighways(currentPath,grid);
+	    			return false;
+	    		}
+	    	}
+	    	
+	    	while(true) {
+	    		random = rand.nextInt(10);
+	    		if(random>=4) { //keep moving right
+	    			for(int i=0; i<21; i++) {
+	    				if(isSquareBoundry(randX, randY)) {
+	    					return true;
+	    				}
+			    		if(!grid[randX][randY].hasHighway) {
+				    		grid[randX][randY].addHighway();
+				    		currentPath.add(grid[randX][randY]);
+				    		randY++;
+				    		
+			    		} else {
+			    			removeHighways(currentPath,grid);
+			    			return false;
+			    		}
+	    			}
+	    		} else if(random>=2 && random<4) { //move down
+	    			for(int i=0; i<21; i++) {
+	    				if(isSquareBoundry(randX, randY)) {
+	    					return true;
+	    				}
+			    		if(!grid[randX][randY].hasHighway) {
+				    		grid[randX][randY].addHighway();
+				    		currentPath.add(grid[randX][randY]);
+				    		randX++;
+			    		} else {
+			    			removeHighways(currentPath,grid);
+			    			return false;
+			    		}
+	    			}
+	    		} else { //move up
+	    			for(int i=0; i<21; i++) {
+	    				if(isSquareBoundry(randX, randY)) {
+	    					return true;
+	    				}
+			    		if(!grid[randX][randY].hasHighway) {
+				    		grid[randX][randY].addHighway();
+				    		currentPath.add(grid[randX][randY]);
+				    		randX--;
+			    		} else {
+			    			removeHighways(currentPath,grid);
+			    			return false;
+			    		}
+	    			}
+	    		}
+	    	}
+	    }
+	    
+	    private boolean rightWall(Square[][] grid) {
+	    	Random rand = new Random();
+	    	int randX = rand.nextInt(121);
+	    	int randY = 159;
+	    	int random;
+	    	ArrayList<Square> currentPath = new ArrayList<Square>();
+	    	
+	    	for(int i=0; i<21; i++) {
+	    		if(!grid[randX][randY].hasHighway) {
+		    		grid[randX][randY].addHighway();
+		    		currentPath.add(grid[randX][randY]);
+		    		randY--;
+	    		} else {
+	    			removeHighways(currentPath,grid);
+	    			return false;
+	    		}
+	    	}
+	    	
+	    	while(true) {
+	    		random = rand.nextInt(10);
+	    		if(random>=4) { //keep moving left
+	    			for(int i=0; i<21; i++) {
+	    				if(isSquareBoundry(randX, randY)) {
+	    					return true;
+	    				}
+			    		if(!grid[randX][randY].hasHighway) {
+				    		grid[randX][randY].addHighway();
+				    		currentPath.add(grid[randX][randY]);
+				    		randY--;
+			    		} else {
+			    			removeHighways(currentPath,grid);
+			    			return false;
+			    		}
+	    			}
+	    		} else if(random>=2 && random<4) { //move down
+	    			for(int i=0; i<21; i++) {
+	    				if(isSquareBoundry(randX, randY)) {
+	    					return true;
+	    				}
+			    		if(!grid[randX][randY].hasHighway) {
+				    		grid[randX][randY].addHighway();
+				    		currentPath.add(grid[randX][randY]);
+				    		randX++;
+			    		} else {
+			    			removeHighways(currentPath,grid);
+			    			return false;
+			    		}
+	    			}
+	    		} else { //move up
+	    			for(int i=0; i<21; i++) {
+	    				if(isSquareBoundry(randX, randY)) {
+	    					return true;
+	    				}
+			    		if(!grid[randX][randY].hasHighway) {
+				    		grid[randX][randY].addHighway();
+				    		currentPath.add(grid[randX][randY]);
+				    		randX--;
+			    		} else {
+			    			removeHighways(currentPath,grid);
+			    			return false;
+			    		}
+	    			}
+	    		}
+	    	}
+	    }
+	    
+	    private boolean topWall(Square[][] grid) {
+	    	Random rand = new Random();
+	    	int randX = 0;
+	    	int randY = rand.nextInt(160);
+	    	int random;
+	    	ArrayList<Square> currentPath = new ArrayList<Square>();
+	    	
+	    	for(int i=0; i<21; i++) {
+	    		if(!grid[randX][randY].hasHighway) {
+		    		grid[randX][randY].addHighway();
+		    		currentPath.add(grid[randX][randY]);
+		    		randX++;
+	    		} else {
+	    			removeHighways(currentPath,grid);
+	    			return false;
+	    		}
+	    	}
+	    	
+	    	while(true) {
+	    		random = rand.nextInt(10);
+	    		if(random>=4) { //keep moving down
+	    			for(int i=0; i<21; i++) {
+	    				if(isSquareBoundry(randX, randY)) {
+	    					return true;
+	    				}
+			    		if(!grid[randX][randY].hasHighway) {
+				    		grid[randX][randY].addHighway();
+				    		currentPath.add(grid[randX][randY]);
+				    		randX++;
+			    		} else {
+			    			removeHighways(currentPath,grid);
+			    			return false;
+			    		}
+	    			}
+	    		} else if(random>=2 && random<4) { //move right
+	    			for(int i=0; i<21; i++) {
+	    				if(isSquareBoundry(randX, randY)) {
+	    					return true;
+	    				}
+			    		if(!grid[randX][randY].hasHighway) {
+				    		grid[randX][randY].addHighway();
+				    		currentPath.add(grid[randX][randY]);
+				    		randY++;
+			    		} else {
+			    			removeHighways(currentPath,grid);
+			    			return false;
+			    		}
+	    			}
+	    		} else { //move left
+	    			for(int i=0; i<21; i++) {
+	    				if(isSquareBoundry(randX, randY)) {
+	    					return true;
+	    				}
+			    		if(!grid[randX][randY].hasHighway) {
+				    		grid[randX][randY].addHighway();
+				    		currentPath.add(grid[randX][randY]);
+				    		randY--;
+			    		} else {
+			    			removeHighways(currentPath,grid);
+			    			return false;
+			    		}
+	    			}
+	    		}
+	    	}
+	    }
+
+	    private boolean bottomWall(Square[][] grid) {
+	    	Random rand = new Random();
+	    	int randX = 119;
+	    	int randY = rand.nextInt(160);
+	    	int random;
+	    	ArrayList<Square> currentPath = new ArrayList<Square>();
+	    	
+	    	for(int i=0; i<21; i++) {
+	    		if(!grid[randX][randY].hasHighway) {
+		    		grid[randX][randY].addHighway();
+		    		currentPath.add(grid[randX][randY]);
+		    		randX--;
+	    		} else {
+	    			removeHighways(currentPath,grid);
+	    			return false;
+	    		}
+	    	}
+	    	
+	    	while(true) {
+	    		random = rand.nextInt(10);
+	    		if(random>=4) { //keep moving up
+	    			for(int i=0; i<21; i++) {
+	    				if(isSquareBoundry(randX, randY)) {
+	    					return true;
+	    				}
+			    		if(!grid[randX][randY].hasHighway) {
+				    		grid[randX][randY].addHighway();
+				    		currentPath.add(grid[randX][randY]);
+				    		randX--;
+			    		} else {
+			    			removeHighways(currentPath,grid);
+			    			return false;
+			    		}
+	    			}
+	    		} else if(random>=2 && random<4) { //move right
+	    			for(int i=0; i<21; i++) {
+	    				if(isSquareBoundry(randX, randY)) {
+	    					return true;
+	    				}
+			    		if(!grid[randX][randY].hasHighway) {
+				    		grid[randX][randY].addHighway();
+				    		currentPath.add(grid[randX][randY]);
+				    		randY++;
+			    		} else {
+			    			removeHighways(currentPath,grid);
+			    			return false;
+			    		}
+	    			}
+	    		} else { //move up
+	    			for(int i=0; i<21; i++) {
+	    				if(isSquareBoundry(randX, randY)) {
+	    					return true;
+	    				}
+			    		if(!grid[randX][randY].hasHighway) {
+				    		grid[randX][randY].addHighway();
+				    		currentPath.add(grid[randX][randY]);
+				    		randY--;
+			    		} else {
+			    			removeHighways(currentPath,grid);
+			    			return false;
+			    		}
+	    			}
+	    		}
+	    	}
 	    }
 	    
 	    private Square[][] copyGridInto(Square[][] copy, Square[][] grid) {
 	    	for(int i=0; i<grid.length; i++) {
 	    		for(int j=0; j<grid[0].length; j++) {
-	    			copy[i][j] = grid[i][j];
+	    			Square curr = grid[i][j];
+	    			curr = new Square(curr.color, curr.x, curr.y, curr.isS, curr.isG);
+	    			copy[i][j] = curr;
 	    		}
 	    	}
 	    	return copy;
 	    }
 	    
+	    private Square[][] copyGridInto2(Square[][] copy, Square[][] grid) {
+	    	for(int i=0; i<grid.length; i++) {
+	    		for(int j=0; j<grid[0].length; j++) {
+	    			Square curr = grid[i][j];
+	    			copy[i][j] = curr;
+	    		}
+	    	}
+	    	return copy;
+	    }
+
+	    
 		public NewGrid(File inputFile) throws FileNotFoundException {
 			Scanner sc = new Scanner(inputFile);
 			Square[] hardToTraverseCenters = new Square[8];
-			squares = new Square[120][160];
+			squares = new Square[121][160];
 			
 			//Get start and goal coords
 			StringTokenizer st = new StringTokenizer(sc.nextLine(), ",()\n");
@@ -113,7 +397,7 @@ public class NewGrid{
 			}
 			
 			
-			for(int i=0; i<120; i++) {
+			for(int i=0; i<121; i++) {
 				for(int j=0; j<160; j++) {
 					squares[i][j] = new Square(sc.next().charAt(0), i, j, false, false);
 				}
@@ -179,7 +463,7 @@ public class NewGrid{
 			  for(int i = 0; i < row; i++){
 				  for(int j = 0; j < column; j++){
 					  if(randomPercent(12) == true){
-						  if(squares[i][j].currColor != "BLUE"){
+						  if(squares[i][j].typeOfCell != 'a' && squares[i][j].typeOfCell != 'b'){
 							  if(count >= 3840) continue;
 							  squares[i][j].currColor = Square.setColor('0');
 							  squares[i][j].typeOfCell = '0';
@@ -188,7 +472,6 @@ public class NewGrid{
 					  }
 				  }
 			  }
-			  System.out.println(count);
 		  }
 	  }
 	  //marks start and goal squares, later put boxes on everything corresponding to the types and then run A*
@@ -209,7 +492,6 @@ public class NewGrid{
         	squares[rx][ry].isS = true;
         	squares[rx][ry].x = rx;
         	squares[rx][ry].x = rx;
-        	System.out.println("Start coord: "+rx + " "+ ry);
         	this.sStart = squares[rx][ry];
     		rx = coordinateG.getX();
     		ry = coordinateG.getY();
@@ -217,7 +499,6 @@ public class NewGrid{
         	squares[rx][ry].isG = true;
         	squares[rx][ry].x = rx;
         	squares[rx][ry].x = rx;
-        	System.out.println("Goal coord: "+rx + " "+ ry);
         	this.sGoal = squares[rx][ry];
 	  }
 	    
