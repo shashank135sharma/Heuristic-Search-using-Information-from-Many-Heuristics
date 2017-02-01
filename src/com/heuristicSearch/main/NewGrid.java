@@ -32,7 +32,6 @@ public class NewGrid{
 	    	panel.setLayout(new GridLayout(row, column));
 	    	Listenerclass listener = new Listenerclass();
 	        panel.addMouseListener(listener);
-	        //frame.setSize(640, 480);
 	        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 	        frame.setResizable(false);
 	    	frame.add(panel);
@@ -360,6 +359,7 @@ public class NewGrid{
 	    }
 	    
     
+	    //if file is provided do this
 		public NewGrid(File inputFile) throws FileNotFoundException {
 			Scanner sc = new Scanner(inputFile);
 			Square[] hardToTraverseCenters = new Square[8];
@@ -367,9 +367,9 @@ public class NewGrid{
 			
 			//Get start and goal coords
 			StringTokenizer st = new StringTokenizer(sc.nextLine(), ",()\n");
-			sStart = new Square('1', Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), true, false);
+			sStart = new Square('s', Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), true, false);
 			st = new StringTokenizer(sc.nextLine(), ",()\n");
-			sGoal = new Square('1', Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), false, true);
+			sGoal = new Square('g', Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), false, true);
 			
 			//Get hardToTraverse cell centers
 			for (int i=0 ;i<8; i++) {

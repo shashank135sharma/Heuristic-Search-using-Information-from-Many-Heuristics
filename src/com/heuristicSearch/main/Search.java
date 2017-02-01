@@ -1,6 +1,7 @@
 package com.heuristicSearch.main;
 
 import java.awt.Canvas;
+import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.PriorityQueue;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class Search extends Canvas implements Runnable{
 			current.updateGVal(start);
 			current.updateHVal(goal);
 			
-			if(current.equals(goal) || getDistance(goal, current) < 1.41) {
+			if(current.equals(goal) || getDistance2(goal, current) < 0.5) {
 				double length = 0;
 				start.isStart();
 				while(!current.parent.equals(start)) {
@@ -49,6 +50,9 @@ public class Search extends Canvas implements Runnable{
 						current = current.parent;
 					} catch(InterruptedException ex) {
 					    Thread.currentThread().interrupt();
+					}
+					if(current.parent == start){
+						current.tracePath();
 					}
 				}
 				System.out.println("Path Found With Length: "+length);
@@ -167,21 +171,32 @@ public class Search extends Canvas implements Runnable{
 	
 	//mainly used for hCost it gets the distance from you to goal box using Pythagorean Theorem
 	private double getDistance(Square square1, Square goal){
-		double dx = square1.x - goal.x;
-		double dy = square1.y - goal.y;
+		double dx = Math.abs(square1.x - goal.x);
+		double dy = Math.abs(square1.y - goal.y);
 		return Math.sqrt(dx*dx + dy*dy);
+	}
+	private double getDistance2(Square square1, Square goal){
+		double D = 1;
+		double D2 = Math.sqrt(2);
+		double dx = Math.abs(square1.x - goal.x);
+		double dy = Math.abs(square1.y - goal.y);
+		return D * (dx + dy) + (D2 - 2 * D) * min(dx, dy);
+	}
+	private double min(double dx, double dy){
+		if(dx <= dy) return dy;
+		else return dx;
 	}
 	
 	//main call and search method which creates a grid behind the boxes.
 	//I haven't called the A* algorithm yet, just created a GUI of grids
 	//But I am confident it works I looked at many tutorials on YouTube
-	public Search() throws InvocationTargetException, InterruptedException{
+	public Search() throws InvocationTargetException, InterruptedException, FileNotFoundException{
 		grid = new NewGrid();
 		Thread.sleep(2000);
 		aStarFindPath(grid.sStart, grid.sGoal);
 	}
 	
-	public static void main(String args[]) throws InvocationTargetException, InterruptedException{
+	public static void main(String args[]) throws InvocationTargetException, InterruptedException, FileNotFoundException{
 		new Search();
 	}
 	

@@ -14,7 +14,7 @@ public class Listenerclass implements MouseListener{
 		//need to generalize this. right now it only does it for the first square.
 		//if you click in the first square it'll return the color
 		squareCoordinates(mx, my);
-		System.out.println(Square.getSquare(x, y).currColor);
+		//System.out.println(Square.getSquare(x, y).currColor);
 	}
 	
 	private void squareCoordinates(int mx, int my){

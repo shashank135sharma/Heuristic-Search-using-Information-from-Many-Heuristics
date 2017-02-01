@@ -31,7 +31,7 @@ public class Square extends JPanel{
 		this.color = '1';
 		this.moveXY = 1.0;
 		this.moveDiag = 1.41;
-		this.currColor = "WHITE";
+		this.currColor = "GREEN";
 	}
 	
 	public void updateHVal(Square goal) {
@@ -70,46 +70,46 @@ public class Square extends JPanel{
 		this.isS = isStart;
 		
 		switch(currColor) {
-		case "WHITE": //Regular unblocked
+		case "GREEN": 					//Regular unblocked
 			typeOfCell = '1';
 			this.moveXY = 1.0;	
 			this.moveDiag = 1.41;
 			break;
 			
-		case "GOLD": //Regular hard to traverse
+		case "DARK_GREEN": 				//Regular hard to traverse
 			typeOfCell = '2';
 			this.moveXY = 2.0;	
 			this.moveDiag = 2.83;
 			break;
 			
-		case "BLACK": //Blocked
+		case "BLACK": 					//Blocked
 			typeOfCell = '0';
 			this.moveXY = 0.0;	
 			this.moveDiag = 0.00;
 			break;
 			
-		case "LIGHT_BLUE": //Highway unblocked
+		case "LIGHT_BLUE": 				//Highway unblocked
 			typeOfCell = 'a';
 			this.moveXY = 0.25;
 			this.moveDiag = 0.35;
 			hasHighway = true;
 			break;
 			
-		case "DARK_BLUE": //Highway hard to traverse
+		case "DARK_BLUE": 				//Highway hard to traverse
 			typeOfCell = 'b';
 			this.moveXY = 0.5;	
 			this.moveDiag = 0.71;
 			hasHighway = true;
 			break;
 			
-		case "PINK": //Start
+		case "PURPLE": 					//Start
 			typeOfCell = '1';
 			this.moveXY = 1; 
 			this.moveDiag = 1.41;
 			isS = true;
 			break;
 			
-		case "PURPLE": //Goal
+		case "RED": 					//Goal
 			typeOfCell = '1';
 			this.moveXY = 1; 
 			this.moveDiag = 1.41;
@@ -125,17 +125,17 @@ public class Square extends JPanel{
 		case '0':
 			return "BLACK";
 		case '1':
-			return "WHITE";
+			return "GREEN";
 		case '2':
-			return "GOLD";
+			return "DARK_GREEN";
 		case 'a':
 			return "LIGHT_BLUE";
 		case 'b':
 			return "DARK_BLUE";
 		case 's':
-			return "PINK";
-		case 'g':
 			return "PURPLE";
+		case 'g':
+			return "RED";
 		}		
 		return null;
 	}
@@ -174,24 +174,24 @@ public class Square extends JPanel{
 	    }
 	    
 	    public void squareInFringe() {
-	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b' && this.currColor != "GOLD" && !isS && !isG)
-	    		this.currColor = "RED";
+	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b' && this.currColor != "DARK_GREEN" && !isS && !isG)
+	    		this.currColor = "BLUE_GREEN";
 	    	repaint();
 	    }
 	    
 	    public void squareInClosed() {
-	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b' && this.currColor != "GOLD" && !isS && !isG)
-	    		this.currColor = "GREEN";
+	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b' && this.currColor != "DARK_GREEN" && !isS && !isG)
+	    		this.currColor = "LIGHT_BLUE_GREEN";
 	    	repaint();
 	    }
 	    
 	    public void tracePath() {
-	    	this.currColor = "YELLOW";
+	    	this.currColor = "GOLD";
 	    	repaint();
 	    }
 	    
 	    public void isStart() {
-	    	this.currColor = "PINK";
+	    	this.currColor = "PURPLE";
 	    	repaint();
 	    }
 	    
@@ -227,16 +227,16 @@ public class Square extends JPanel{
 	        int margin = 1;
 	        Dimension dim = getSize();
 	        super.paintComponent(g);
-	        if(currColor == "WHITE") g.setColor(Color.white);					//regular unblocked cell
-	        if(currColor == "GOLD") g.setColor(new Color(205,133, 63));			//Hard to traverse cell
-	        if(currColor == "BLACK") g.setColor(Color.black);					//blocked cell
-	        if(currColor == "LIGHT_BLUE") g.setColor(Color.blue.brighter());	//Regular unblocked with highway
-	        if(currColor == "DARK_BLUE") g.setColor(Color.blue.darker());		//Hard to traverse with highway
-	        if(currColor == "PINK") g.setColor(new Color(255,20,147));		    //START
-	        if(currColor == "PURPLE") g.setColor(new Color(255,0,255));			//GOAL
-	        if(currColor == "RED") g.setColor(Color.red);
-	        if(currColor == "GREEN") g.setColor(Color.green);
-	        if(currColor == "YELLOW") g.setColor(Color.yellow);
+	        if(currColor == "GREEN") g.setColor(new Color(108, 196, 84));			//regular unblocked cell
+	        if(currColor == "DARK_GREEN") g.setColor(new Color(57, 104, 33));		//Hard to traverse cell
+	        if(currColor == "BLACK") g.setColor(Color.black);						//blocked cell
+	        if(currColor == "LIGHT_BLUE") g.setColor(Color.blue.brighter());		//Regular unblocked with highway
+	        if(currColor == "DARK_BLUE") g.setColor(Color.blue.darker());			//Hard to traverse with highway
+	        if(currColor == "PURPLE") g.setColor(new Color(204, 0, 204));			//START
+	        if(currColor == "RED") g.setColor(new Color(255, 0, 0));				//GOAL
+	        if(currColor == "BLUE_GREEN") g.setColor(new Color(0, 102, 102));		//FRINGE
+	        if(currColor == "LIGHT_BLUE_GREEN") g.setColor(new Color(51, 255, 156));//SEARCHED new Color(0, 204, 153)
+	        if(currColor == "GOLD") g.setColor(new Color(255, 217, 0));				//PATH
 	        
 	        g.fillRect(margin, margin, dim.height, dim.height);
 	    }
@@ -244,13 +244,13 @@ public class Square extends JPanel{
 		public void changeTypeOfCell(char c) {
 			currColor = setColor(c);
 			switch(currColor) {
-			case "WHITE": //Regular unblocked
+			case "GREEN": 		//Regular unblocked
 				typeOfCell = '1';
 				this.moveXY = 1.0;	
 				this.moveDiag = 1.41;
 				break;
 				
-			case "GOLD": //Regular hard to traverse
+			case "DARK_GREEN": //Regular hard to traverse
 				typeOfCell = '2';
 				this.moveXY = 2.0;	
 				this.moveDiag = 2.83;
@@ -276,14 +276,14 @@ public class Square extends JPanel{
 				hasHighway = true;
 				break;
 				
-			case "PINK": //Start
+			case "PURPLE": //Start
 				typeOfCell = '1';
 				this.moveXY = 1; 
 				this.moveDiag = 1.41;
 				isS = true;
 				break;
 				
-			case "PURPLE": //Goal
+			case "RED": //Goal
 				typeOfCell = '1';
 				this.moveXY = 1; 
 				this.moveDiag = 1.41;
