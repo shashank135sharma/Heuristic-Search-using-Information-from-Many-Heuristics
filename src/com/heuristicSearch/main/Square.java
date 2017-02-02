@@ -34,8 +34,8 @@ public class Square extends JPanel{
 		this.currColor = "GREEN";
 	}
 	
-	public void updateHVal(Square goal) {
-		this.hCost = Math.abs(getDistance(goal));
+	public void updateHVal(Square goal, double weight) {
+		this.hCost = Math.abs(getDistance2(this,goal)) * weight;
 		fCost = this.gCost + this.hCost;
 	}
 	
@@ -47,6 +47,14 @@ public class Square extends JPanel{
 	public double getFCost(){
 		fCost = this.gCost + hCost;
 		return fCost;
+	}
+	
+	private double getDistance2(Square square1, Square goal){
+		double D = 1;
+		double D2 = Math.sqrt(2);
+		double dx = Math.abs(square1.x - goal.x);
+		double dy = Math.abs(square1.y - goal.y);
+		return D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy);
 	}
 	
 	private double getDistance(Square goal){
@@ -174,19 +182,20 @@ public class Square extends JPanel{
 	    }
 	    
 	    public void squareInFringe() {
-	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b' && this.currColor != "DARK_GREEN" && !isS && !isG)
+	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b' && this.currColor != "DARK_GREEN" && !isS && !isG && this.currColor != "GOLD")
 	    		this.currColor = "BLUE_GREEN";
 	    	repaint();
 	    }
 	    
 	    public void squareInClosed() {
-	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b' && this.currColor != "DARK_GREEN" && !isS && !isG)
+	    	if(this.typeOfCell != 'a' && this.typeOfCell != 'b' && this.currColor != "DARK_GREEN" && !isS && !isG && this.currColor != "GOLD")
 	    		this.currColor = "LIGHT_BLUE_GREEN";
 	    	repaint();
 	    }
 	    
-	    public void tracePath() {
-	    	this.currColor = "GOLD";
+	    public void tracePath(String color) {
+	    	if(!isG && !isS)
+	    		this.currColor = color;
 	    	repaint();
 	    }
 	    
@@ -237,8 +246,8 @@ public class Square extends JPanel{
 	        if(currColor == "BLUE_GREEN") g.setColor(new Color(0, 102, 102));		//FRINGE
 	        if(currColor == "LIGHT_BLUE_GREEN") g.setColor(new Color(51, 255, 156));//SEARCHED new Color(0, 204, 153)
 	        if(currColor == "GOLD") g.setColor(new Color(255, 217, 0));				//PATH
-	        
-	        g.fillRect(margin, margin, dim.height, dim.height);
+	        if(currColor == "WHITE") g.setColor(Color.WHITE);
+	        g.fillRect(margin, margin, dim.width, dim.height);
 	    }
 
 		public void changeTypeOfCell(char c) {

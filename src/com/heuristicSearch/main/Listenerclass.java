@@ -10,7 +10,7 @@ public class Listenerclass implements MouseListener{
 	public void mouseClicked(MouseEvent e) {
 		int mx = e.getX();
 		int my = e.getY();
-		System.out.println(mx + ", " + my);
+		//System.out.println(mx + ", " + my);
 		//need to generalize this. right now it only does it for the first square.
 		//if you click in the first square it'll return the color
 		squareCoordinates(mx, my);

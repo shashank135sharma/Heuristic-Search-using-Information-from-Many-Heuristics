@@ -44,9 +44,7 @@ public class NewGrid{
 	    
 	    private Square[][] addUBHighways(Square[][] grid) {
 	    	for(int i=0; i<4; i++) {
-	    		Square[][] copy = grid;
-	    		while(!randomWalls(copy));
-	    		grid = copy;
+	    		while(!randomWalls(grid));
 	    	}
 	    	return grid;
 	    }
