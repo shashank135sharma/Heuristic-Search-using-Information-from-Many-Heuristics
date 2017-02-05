@@ -55,22 +55,22 @@ public class NewGrid{
 	    	random = rand.nextInt(100);
 	    	
 	    	if(random>75) { //Origin is left wall
-	    		if(leftWall(grid)) {
+	    		if(Wall(grid, "left")) {
 	    		} else {
 	    			return false;
 	    		}
 	    	} else if(random>50 && random<=75) {
-	    		if(rightWall(grid)) {//Origin is right wall
+	    		if(Wall(grid, "right")) {//Origin is right wall
 	    		} else {
 	    			return false;
 	    		}
 	    	} else if(random>25 && random<=50) {//Origin is top wall
-	    		if(topWall(grid)) {
+	    		if(Wall(grid, "top")) {
 	    		} else {
 	    			return false;
 	    		}
 	    	} else {//Origin is bottom wall
-	    		if(bottomWall(grid)) {
+	    		if(Wall(grid, "bottom")) {
 	    		} else {
 	    			return false;
 	    		}
@@ -80,7 +80,7 @@ public class NewGrid{
 	    
 	    
 	    private static boolean isSquareBoundry(int x, int y) {
-	    	if(x-1 < 0 || x+1>121 || y-1 < 0 || y+1 > 160) {
+	    	if(x-1 < 0 || x+1>120 || y-1 < 0 || y+1 > 160) {
 	    		return true;
 	    	}
 	    	return false;
@@ -92,17 +92,39 @@ public class NewGrid{
 	    	}
 	    }
 	    
-	    private boolean leftWall(Square[][] grid) {
+	    private boolean Wall(Square[][] grid, String side) {
 	    	Random rand = new Random();
-	    	int randX = rand.nextInt(121);
+	    	int randX = 0;
 	    	int randY = 0;
+	    	if(side == "left" || side == "Left"){
+	    		randX = rand.nextInt(120);
+	    		randY = 0;
+	    	}else if(side == "right" || side == "Right"){
+	    		randX = rand.nextInt(120);
+	    		randY = 159;
+	    	}else if(side == "top" || side == "Top"){
+	    		randX = 0;
+	    		randY = rand.nextInt(160);
+	    	}else if(side == "bottom" || side == "Bottom"){
+	    		randX = 119;
+	    		randY = rand.nextInt(160);
+	    	}
+	    	
 	    	int random;
 	    	ArrayList<Square> currentPath = new ArrayList<Square>();
 	    	for(int i=0; i<21; i++) {
 	    		if(!grid[randX][randY].hasHighway) {
 		    		grid[randX][randY].addHighway();
 		    		currentPath.add(grid[randX][randY]);
-		    		randY++;
+		    		if(side == "left" || side == "Left"){
+			    		randY++;
+			    	}else if(side == "right" || side == "Right"){
+			    		randY--;
+			    	}else if(side == "top" || side == "Top"){
+			    		randX++;
+			    	}else if(side == "bottom" || side == "Bottom"){
+			    		randX--;
+			    	}
 	    		} else {
 	    			removeHighways(currentPath,grid);
 	    			return false;
@@ -111,176 +133,69 @@ public class NewGrid{
 	    	
 	    	while(true) {
 	    		random = rand.nextInt(10);
-	    		if(random>=4) { //keep moving right
-	    			for(int i=0; i<21; i++) {
+	    		if(random>=4) { //keep moving away for 20 blocks
+	    			for(int i=0; i<20; i++) {
 	    				if(isSquareBoundry(randX, randY)) {
 	    					return true;
 	    				}
 			    		if(!grid[randX][randY].hasHighway) {
 				    		grid[randX][randY].addHighway();
 				    		currentPath.add(grid[randX][randY]);
-				    		randY++;
+				    		if(side == "left" || side == "Left"){
+					    		randY++;
+					    	}else if(side == "right" || side == "Right"){
+					    		randY--;
+					    	}else if(side == "top" || side == "Top"){
+					    		randX++;
+					    	}else if(side == "bottom" || side == "Bottom"){
+					    		randX--;
+					    	}
 				    		
 			    		} else {
 			    			removeHighways(currentPath,grid);
 			    			return false;
 			    		}
 	    			}
-	    		} else if(random>=2 && random<4) { //move down
-	    			for(int i=0; i<21; i++) {
-	    				if(isSquareBoundry(randX, randY)) {
-	    					return true;
-	    				}
-			    		if(!grid[randX][randY].hasHighway) {
-				    		grid[randX][randY].addHighway();
-				    		currentPath.add(grid[randX][randY]);
-				    		randX++;
-			    		} else {
-			    			removeHighways(currentPath,grid);
-			    			return false;
-			    		}
-	    			}
-	    		} else { //move up
-	    			for(int i=0; i<21; i++) {
-	    				if(isSquareBoundry(randX, randY)) {
-	    					return true;
-	    				}
-			    		if(!grid[randX][randY].hasHighway) {
-				    		grid[randX][randY].addHighway();
-				    		currentPath.add(grid[randX][randY]);
-				    		randX--;
-			    		} else {
-			    			removeHighways(currentPath,grid);
-			    			return false;
-			    		}
-	    			}
-	    		}
-	    	}
-	    }
-	    
-	    private boolean rightWall(Square[][] grid) {
-	    	Random rand = new Random();
-	    	int randX = rand.nextInt(121);
-	    	int randY = 159;
-	    	int random;
-	    	ArrayList<Square> currentPath = new ArrayList<Square>();
-	    	
-	    	for(int i=0; i<21; i++) {
-	    		if(!grid[randX][randY].hasHighway) {
-		    		grid[randX][randY].addHighway();
-		    		currentPath.add(grid[randX][randY]);
-		    		randY--;
-	    		} else {
-	    			removeHighways(currentPath,grid);
-	    			return false;
-	    		}
-	    	}
-	    	
-	    	while(true) {
-	    		random = rand.nextInt(10);
-	    		if(random>=4) { //keep moving left
-	    			for(int i=0; i<21; i++) {
-	    				if(isSquareBoundry(randX, randY)) {
-	    					return true;
-	    				}
-			    		if(!grid[randX][randY].hasHighway) {
-				    		grid[randX][randY].addHighway();
-				    		currentPath.add(grid[randX][randY]);
-				    		randY--;
-			    		} else {
-			    			removeHighways(currentPath,grid);
-			    			return false;
-			    		}
-	    			}
-	    		} else if(random>=2 && random<4) { //move down
-	    			for(int i=0; i<21; i++) {
-	    				if(isSquareBoundry(randX, randY)) {
-	    					return true;
-	    				}
-			    		if(!grid[randX][randY].hasHighway) {
-				    		grid[randX][randY].addHighway();
-				    		currentPath.add(grid[randX][randY]);
-				    		randX++;
-			    		} else {
-			    			removeHighways(currentPath,grid);
-			    			return false;
-			    		}
-	    			}
-	    		} else { //move up
-	    			for(int i=0; i<21; i++) {
-	    				if(isSquareBoundry(randX, randY)) {
-	    					return true;
-	    				}
-			    		if(!grid[randX][randY].hasHighway) {
-				    		grid[randX][randY].addHighway();
-				    		currentPath.add(grid[randX][randY]);
-				    		randX--;
-			    		} else {
-			    			removeHighways(currentPath,grid);
-			    			return false;
-			    		}
-	    			}
-	    		}
-	    	}
-	    }
-	    
-	    private boolean topWall(Square[][] grid) {
-	    	Random rand = new Random();
-	    	int randX = 0;
-	    	int randY = rand.nextInt(160);
-	    	int random;
-	    	ArrayList<Square> currentPath = new ArrayList<Square>();
-	    	
-	    	for(int i=0; i<21; i++) {
-	    		if(!grid[randX][randY].hasHighway) {
-		    		grid[randX][randY].addHighway();
-		    		currentPath.add(grid[randX][randY]);
-		    		randX++;
-	    		} else {
-	    			removeHighways(currentPath,grid);
-	    			return false;
-	    		}
-	    	}
-	    	
-	    	while(true) {
-	    		random = rand.nextInt(10);
-	    		if(random>=4) { //keep moving down
-	    			for(int i=0; i<21; i++) {
-	    				if(isSquareBoundry(randX, randY)) {
-	    					return true;
-	    				}
-			    		if(!grid[randX][randY].hasHighway) {
-				    		grid[randX][randY].addHighway();
-				    		currentPath.add(grid[randX][randY]);
-				    		randX++;
-			    		} else {
-			    			removeHighways(currentPath,grid);
-			    			return false;
-			    		}
-	    			}
 	    		} else if(random>=2 && random<4) { //move right
-	    			for(int i=0; i<21; i++) {
+	    			for(int i=0; i<20; i++) {
 	    				if(isSquareBoundry(randX, randY)) {
 	    					return true;
 	    				}
 			    		if(!grid[randX][randY].hasHighway) {
 				    		grid[randX][randY].addHighway();
 				    		currentPath.add(grid[randX][randY]);
-				    		randY++;
+				    		if(side == "left" || side == "Left"){
+					    		randX++;
+					    	}else if(side == "right" || side == "Right"){
+					    		randX--;
+					    	}else if(side == "top" || side == "Top"){
+					    		randY--;
+					    	}else if(side == "bottom" || side == "Bottom"){
+					    		randY++;
+					    	}
 			    		} else {
 			    			removeHighways(currentPath,grid);
 			    			return false;
 			    		}
 	    			}
 	    		} else { //move left
-	    			for(int i=0; i<21; i++) {
+	    			for(int i=0; i<20; i++) {
 	    				if(isSquareBoundry(randX, randY)) {
 	    					return true;
 	    				}
 			    		if(!grid[randX][randY].hasHighway) {
 				    		grid[randX][randY].addHighway();
 				    		currentPath.add(grid[randX][randY]);
-				    		randY--;
+				    		if(side == "left" || side == "Left"){
+					    		randX--;
+					    	}else if(side == "right" || side == "Right"){
+					    		randX++;
+					    	}else if(side == "top" || side == "Top"){
+					    		randY++;
+					    	}else if(side == "bottom" || side == "Bottom"){
+					    		randY--;
+					    	}
+				    		
 			    		} else {
 			    			removeHighways(currentPath,grid);
 			    			return false;
@@ -289,73 +204,6 @@ public class NewGrid{
 	    		}
 	    	}
 	    }
-
-	    private boolean bottomWall(Square[][] grid) {
-	    	Random rand = new Random();
-	    	int randX = 119;
-	    	int randY = rand.nextInt(160);
-	    	int random;
-	    	ArrayList<Square> currentPath = new ArrayList<Square>();
-	    	
-	    	for(int i=0; i<21; i++) {
-	    		if(!grid[randX][randY].hasHighway) {
-		    		grid[randX][randY].addHighway();
-		    		currentPath.add(grid[randX][randY]);
-		    		randX--;
-	    		} else {
-	    			removeHighways(currentPath,grid);
-	    			return false;
-	    		}
-	    	}
-	    	
-	    	while(true) {
-	    		random = rand.nextInt(10);
-	    		if(random>=4) { //keep moving up
-	    			for(int i=0; i<21; i++) {
-	    				if(isSquareBoundry(randX, randY)) {
-	    					return true;
-	    				}
-			    		if(!grid[randX][randY].hasHighway) {
-				    		grid[randX][randY].addHighway();
-				    		currentPath.add(grid[randX][randY]);
-				    		randX--;
-			    		} else {
-			    			removeHighways(currentPath,grid);
-			    			return false;
-			    		}
-	    			}
-	    		} else if(random>=2 && random<4) { //move right
-	    			for(int i=0; i<21; i++) {
-	    				if(isSquareBoundry(randX, randY)) {
-	    					return true;
-	    				}
-			    		if(!grid[randX][randY].hasHighway) {
-				    		grid[randX][randY].addHighway();
-				    		currentPath.add(grid[randX][randY]);
-				    		randY++;
-			    		} else {
-			    			removeHighways(currentPath,grid);
-			    			return false;
-			    		}
-	    			}
-	    		} else { //move up
-	    			for(int i=0; i<21; i++) {
-	    				if(isSquareBoundry(randX, randY)) {
-	    					return true;
-	    				}
-			    		if(!grid[randX][randY].hasHighway) {
-				    		grid[randX][randY].addHighway();
-				    		currentPath.add(grid[randX][randY]);
-				    		randY--;
-			    		} else {
-			    			removeHighways(currentPath,grid);
-			    			return false;
-			    		}
-	    			}
-	    		}
-	    	}
-	    }
-	    
     
 	    //if file is provided do this
 		public NewGrid(File inputFile) throws FileNotFoundException {
@@ -363,7 +211,7 @@ public class NewGrid{
 			Square[] hardToTraverseCenters = new Square[8];
 			squares = new Square[row][column];
 			
-			//Get start and goal coords
+			//Get start and goal coordinates
 			StringTokenizer st = new StringTokenizer(sc.nextLine(), ",()\n");
 			sStart = new Square('s', Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), true, false);
 			st = new StringTokenizer(sc.nextLine(), ",()\n");

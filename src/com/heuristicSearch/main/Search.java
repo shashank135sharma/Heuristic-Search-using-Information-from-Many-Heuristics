@@ -186,10 +186,10 @@ public class Search extends Canvas implements Runnable{
 	//But I am confident it works I looked at many tutorials on YouTube
 	public Search() throws InvocationTargetException, InterruptedException, FileNotFoundException{
 		grid = new NewGrid();
-		System.out.print("What type of search would you like to run?\n(1) A*\t(2)Weighted A*\t(3)Uniform Cost Search: ");
+		System.out.print("What type of search would you like to run?\n(1) A*\t(2) Weighted A*\t(3) Uniform Cost Search");
 		Scanner sc = new Scanner(System.in);
 		int option = sc.nextInt();
-		switch(option) {
+		switch(option){
 		case 1:
 			this.weight = 1;
 			System.out.println("\nRegular A* Search started" );
@@ -213,6 +213,7 @@ public class Search extends Canvas implements Runnable{
 			aStarFindPath(grid.sStart, grid.sGoal);
 			break;
 		}
+		sc.close();
 	}
 	
 	public static void main(String args[]) throws InvocationTargetException, InterruptedException, FileNotFoundException{
