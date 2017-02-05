@@ -77,11 +77,11 @@ public class Search extends Canvas implements Runnable{
 							fringe.add(sPrime);
 							sPrime.parent = null;
 						}
-						try {
+						/*try {
 						    Thread.sleep(1);
 						} catch(InterruptedException ex) {
 						    Thread.currentThread().interrupt();
-						}
+						}*/
 						updateVertex(current,sPrime, start, goal, i, fringe);
 					}
 				}
@@ -189,18 +189,32 @@ public class Search extends Canvas implements Runnable{
 		System.out.print("What type of search would you like to run?\n(1) A*\t(2) Weighted A*\t(3) Uniform Cost Search");
 		Scanner sc = new Scanner(System.in);
 		int option = sc.nextInt();
+		long startTime = 0;
+		long endTime = 0;
+		long duration = 0;
+		
 		switch(option){
 		case 1:
 			this.weight = 1;
 			System.out.println("\nRegular A* Search started" );
+			startTime = System.nanoTime();
 			aStarFindPath(grid.sStart, grid.sGoal);
+			endTime = System.nanoTime();
+
+			duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+			System.out.println("Total Search time was " + duration/1000000 + " miliseconds");
 			break;
 		case 2:
 			System.out.print("Enter weight for Weighted A*: ");
 			this.weight = sc.nextDouble();
 			currentAlgo = "Weighted A*";
 			System.out.println("\nWeighted A* Search with weight "+weight+" started" );
+			startTime = System.nanoTime();
 			aStarFindPath(grid.sStart, grid.sGoal);
+			endTime = System.nanoTime();
+
+			duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+			System.out.println("Total Search time was " + duration/1000000 + " miliseconds");
 			currentAlgo = "Regular A*";
 			weight = 1;
 			tracePathColor = "WHITE";
@@ -210,7 +224,11 @@ public class Search extends Canvas implements Runnable{
 			weight = 0;
 			currentAlgo = "Uniform Cost Search";
 			System.out.println("\nUniform Cost Search Started" );
+			startTime = System.nanoTime();
 			aStarFindPath(grid.sStart, grid.sGoal);
+			endTime = System.nanoTime();
+
+			duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
 			break;
 		}
 		sc.close();
