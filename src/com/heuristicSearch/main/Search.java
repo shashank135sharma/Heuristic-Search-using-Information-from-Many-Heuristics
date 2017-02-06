@@ -19,6 +19,8 @@ public class Search extends Canvas implements Runnable{
 	double weight = 1;
 	String tracePathColor = "GOLD";
 	String currentAlgo = "A*";
+	double length;
+	static boolean isSimulation = false;
 	
 	//compares fCost for A* algorithm and picks the next box accordingly
 	private Comparator<Square> sorter = new Comparator<Square>(){
@@ -30,13 +32,15 @@ public class Search extends Canvas implements Runnable{
 		}
 	};
 	
-	public void aStarFindPath(Square start, Square goal) {
+	public int aStarFindPath(Square start, Square goal) {
 		start.gCost = 0;
+		int numNodesExpanded = 0;
 		start.parent = start;
 		PriorityQueue<Square> fringe = new PriorityQueue<Square>(sorter);
 		ArrayList<Square> closed = new ArrayList<Square>();
 		fringe.add(start);
 		start.isStart();
+		numNodesExpanded++;
 		while(!fringe.isEmpty()) {
 			Square current = fringe.remove();
 			if(current.typeOfCell != '2' && current.typeOfCell != 'b') {
@@ -61,7 +65,10 @@ public class Search extends Canvas implements Runnable{
 						current.tracePath(tracePathColor);
 					}
 				}
-				System.out.println("\nPath Found Using " + currentAlgo+"  With Length: "+length);
+				this.length = length;
+				if(!isSimulation) {
+					System.out.println("\nPath Found Using " + currentAlgo+"  With Length: "+length);
+				}
 				closed.clear();
 				fringe.clear();
 				break;
@@ -76,6 +83,7 @@ public class Search extends Canvas implements Runnable{
 							sPrime.getFCost();
 							fringe.remove(sPrime);
 							fringe.add(sPrime);
+							numNodesExpanded++;
 							sPrime.parent = null;
 						}
 						/*try {
@@ -91,7 +99,7 @@ public class Search extends Canvas implements Runnable{
 				current.squareInClosed();
 			}
 		}
-		
+		return numNodesExpanded;
 	}
 	
 	private void updateVertex(Square current, Square sPrime, Square start, Square goal, int index, PriorityQueue<Square> fringe) {
@@ -273,7 +281,108 @@ public class Search extends Canvas implements Runnable{
 		sc.close();
 	}
 	
+	public Search(int numOfMaps, int numOfStarts) {
+		//Regular A*
+		ArrayList<Long> regularDuration = new ArrayList<Long>();
+		ArrayList<Long> weightedDuration = new ArrayList<Long>();
+		ArrayList<Long> uniformDuration = new ArrayList<Long>();
+		
+		ArrayList<Integer> regularExpanded = new ArrayList<Integer>();
+		ArrayList<Integer> weightedExpanded = new ArrayList<Integer>();
+		ArrayList<Integer> uniformExpanded = new ArrayList<Integer>();
+
+		
+		ArrayList<Double> regularLength = new ArrayList<Double>();
+		ArrayList<Double> weightedLength = new ArrayList<Double>();
+		ArrayList<Double> uniformLength = new ArrayList<Double>();
+
+		long startTime=0;
+		long endTime = 0;
+		long duration = 0;
+		
+		int counter = 0;
+		
+		for(int i=0; i<5; i++) {
+			grid = new NewGrid();
+			for(int j=0 ;j<10; j++) {
+				grid.addSandG();
+				System.out.println("Counter: "+counter);
+				counter++;
+				//regular a*
+				this.weight = 1;
+				startTime = System.nanoTime();
+				regularExpanded.add(aStarFindPath(grid.sStart, grid.sGoal));
+				endTime = System.nanoTime();
+				duration = (endTime - startTime)/1000000;  //divide by 1000000 to get milliseconds.
+				regularDuration.add(duration);
+				regularLength.add(this.length);
+				System.out.println("Counter: "+counter);
+				counter++;
+
+				//weighted a*
+				this.weight = 1.2;
+				startTime = System.nanoTime();
+				weightedExpanded.add(aStarFindPath(grid.sStart, grid.sGoal));
+				endTime = System.nanoTime();
+				duration = (endTime - startTime)/1000000;  //divide by 1000000 to get milliseconds.
+				weightedDuration.add(duration);
+				weightedLength.add(this.length);
+				System.out.println("Counter: "+counter);
+				counter++;
+
+				//uniform cost search
+				this.weight = 0;
+				startTime = System.nanoTime();
+				uniformExpanded.add(aStarFindPath(grid.sStart, grid.sGoal));
+				endTime = System.nanoTime();
+				duration = (endTime - startTime)/1000000;  //divide by 1000000 to get milliseconds.
+				uniformDuration.add(duration);
+				weightedLength.add(this.length);
+			}
+		}
+		System.out.println("\nAverage run time for Regular: "+getLongAvg(regularDuration));		
+		System.out.println("Average run time for Weighted: "+getLongAvg(weightedDuration));
+		System.out.println("Average run time for Uniform: "+getLongAvg(uniformDuration));
+		
+		System.out.println("\nAverage Expanded for Regular: "+getIntegerAvg(regularExpanded));		
+		System.out.println("Average Expanded for Weighted: "+getIntegerAvg(weightedExpanded));
+		System.out.println("Average Expanded for Uniform: "+getIntegerAvg(uniformExpanded));
+
+		System.out.println("\nAverage length for Regular: "+getDoubleAvg(regularLength));		
+		System.out.println("Average length for Weighted: "+getDoubleAvg(weightedLength));
+		System.out.println("Average length for Uniform: "+getDoubleAvg(uniformLength));
+
+	}
+	
+	public long getLongAvg(ArrayList<Long> list) {
+		long sum = 0;
+		for(int i=0; i<list.size(); i++) {
+			sum+=list.get(i);
+		}
+		return sum/list.size();
+	}
+	
+	public double getDoubleAvg(ArrayList<Double> list) {
+		double sum = 0;
+		for(int i=0; i<list.size(); i++) {
+			sum+=list.get(i);
+		}
+		return sum/list.size();
+	}
+	
+	public double getIntegerAvg(ArrayList<Integer> list) {
+		double sum = 0;
+		for(int i=0; i<list.size(); i++) {
+			sum+=list.get(i);
+		}
+		return (sum*1.0)/list.size();
+	}
+
+
+	
 	public static void main(String args[]) throws InvocationTargetException, InterruptedException, FileNotFoundException{
+//		isSimulation = true;
+//		new Search(5,10);
 		new Search();
 	}
 	

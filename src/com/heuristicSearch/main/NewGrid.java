@@ -23,6 +23,7 @@ public class NewGrid{
 	    
 	    //makes the grid with specifications listed
 	    public NewGrid() {
+	    	squares = new Square[row][column];
 		    addsquares();
 	    	addHTTObstacles();
 			addUBHighways(squares);
@@ -305,8 +306,12 @@ public class NewGrid{
 	  //marks start and goal squares, later put boxes on everything corresponding to the types and then run A*
 	  //but still have to check square properties to see if it's river or HTT etc.
 	  public void addSandG(){
-		  coordinates.clear();
-    		Vector2int coordinateS = new Vector2int(random(0,20), random(0,20));
+		  	coordinates.clear();
+		  	if(sStart!=null){
+		  		squares[sStart.x][sStart.y] = new Square('1', sStart.x, sStart.y, false, false);
+		  		squares[sGoal.x][sGoal.y] = new Square('1', sGoal.x, sGoal.y, false, false);
+		  	}
+		  	Vector2int coordinateS = new Vector2int(random(0,20), random(0,20));
     		Vector2int coordinateG = new Vector2int(random(0,119), random(0,159));
     		while(getDistance(coordinateS, coordinateG) <= 100){
     			coordinateG = new Vector2int(random(0,119), random(0,159));
