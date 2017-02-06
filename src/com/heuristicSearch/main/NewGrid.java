@@ -304,7 +304,7 @@ public class NewGrid{
 	  }
 	  //marks start and goal squares, later put boxes on everything corresponding to the types and then run A*
 	  //but still have to check square properties to see if it's river or HTT etc.
-	  private void addSandG(){
+	  public void addSandG(){
 		  coordinates.clear();
     		Vector2int coordinateS = new Vector2int(random(0,20), random(0,20));
     		Vector2int coordinateG = new Vector2int(random(0,119), random(0,159));

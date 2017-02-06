@@ -1,6 +1,7 @@
 package com.heuristicSearch.main;
 
 import java.awt.Canvas;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.PriorityQueue;
@@ -185,10 +186,28 @@ public class Search extends Canvas implements Runnable{
 	//I haven't called the A* algorithm yet, just created a GUI of grids
 	//But I am confident it works I looked at many tutorials on YouTube
 	public Search() throws InvocationTargetException, InterruptedException, FileNotFoundException{
-		grid = new NewGrid();
-		System.out.print("What type of search would you like to run?\n(1) A*\t(2) Weighted A*\t(3) Uniform Cost Search");
+		System.out.print("Use a: (1) randomly generated grid\t(2)An input file?: ");
 		Scanner sc = new Scanner(System.in);
 		int option = sc.nextInt();
+		switch(option) {
+		case 1:
+			grid = new NewGrid();
+			break;
+		case 2:
+			System.out.print("Enter file name: ");
+			String name = sc.next();
+			File inputFile = new File(name);
+			if(inputFile.exists() && inputFile.isDirectory() ) {
+				grid = new NewGrid(inputFile);
+			} else {
+				System.out.println("File does not exist. Creating random grid.");
+				grid = new NewGrid();
+			}
+			break;
+		}
+		
+		System.out.print("\nWhat type of search would you like to run?\n(1) A*\t(2) Weighted A*\t(3) Uniform Cost Search: ");
+		option = sc.nextInt();
 		long startTime = 0;
 		long endTime = 0;
 		long duration = 0;
@@ -229,6 +248,26 @@ public class Search extends Canvas implements Runnable{
 			endTime = System.nanoTime();
 
 			duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+			break;
+		}
+		
+		System.out.print("\n Would you like to get cost information about a cell? (Y/N): ");
+		char ch = sc.next().toLowerCase().charAt(0);
+		switch(ch) {
+		case 'y':
+			while(ch == 'y') {
+				System.out.print("\nEnter X and Y value for cell in format X Y (ex: 112 114):  ");
+				int getX = sc.nextInt();
+				int getY = sc.nextInt();
+				Square curr = grid.squares[getX][getY];
+				System.out.println("\n("+getX+","+getY+") G Cost: "+curr.gCost+" HCost: "+curr.hCost+" FCost: "+curr.getFCost());
+				System.out.print("Get information about more cells?(Y/N): ");
+				ch = sc.next().toLowerCase().charAt(0);
+			}
+			System.out.println("\nAlright. Bye!");
+			break;
+		case 'n':
+			System.out.println("\nAlright. Bye!");
 			break;
 		}
 		sc.close();
