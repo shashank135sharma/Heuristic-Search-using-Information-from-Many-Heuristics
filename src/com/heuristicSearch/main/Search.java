@@ -86,11 +86,11 @@ public class Search extends Canvas implements Runnable{
 							numNodesExpanded++;
 							sPrime.parent = null;
 						}
-						/*try {
+						try {
 						    Thread.sleep(1);
 						} catch(InterruptedException ex) {
 						    Thread.currentThread().interrupt();
-						}*/
+						}
 						updateVertex(current,sPrime, start, goal, i, fringe);
 					}
 				}
@@ -120,7 +120,7 @@ public class Search extends Canvas implements Runnable{
 		}
 	}
 	
-	public double getCVal(Square current, Square sPrime, int index) {
+	public static double getCVal(Square current, Square sPrime, int index) {
 		if(index%2 == 0) {
 			if (current.typeOfCell =='1' && sPrime.typeOfCell == '2') {
 				if(current.hasHighway && sPrime.hasHighway) {
@@ -165,7 +165,7 @@ public class Search extends Canvas implements Runnable{
 		}
 	}
 	
-	private boolean doesClosedContain(Square curr, ArrayList<Square> closed) {
+	public static boolean doesClosedContain(Square curr, ArrayList<Square> closed) {
 		for(Square sq: closed) {
 			if(sq.equals(curr)) {
 				return true;
@@ -174,7 +174,7 @@ public class Search extends Canvas implements Runnable{
 		return false;
 	}
 	
-	private boolean doesFringeContain(Square curr, PriorityQueue<Square> fringe) {
+	public static boolean doesFringeContain(Square curr, PriorityQueue<Square> fringe) {
 		for(Square sq: fringe) {
 			if(sq.equals(curr)) {
 				return true;
@@ -184,7 +184,7 @@ public class Search extends Canvas implements Runnable{
 	}
 	
 	//mainly used for hCost it gets the distance from you to goal box using Pythagorean Theorem
-	private double getDistance(Square square1, Square goal){
+	public static double getDistance(Square square1, Square goal){
 		double dx = Math.abs(square1.x - goal.x);
 		double dy = Math.abs(square1.y - goal.y);
 		return Math.sqrt(dx*dx + dy*dy);
@@ -200,6 +200,8 @@ public class Search extends Canvas implements Runnable{
 		switch(option) {
 		case 1:
 			grid = new NewGrid();
+			System.out.println("Start: "+grid.sStart.x + " " + grid.sStart.y);
+			System.out.println("End: "+grid.sGoal.x + " " + grid.sGoal.y);
 			break;
 		case 2:
 			System.out.print("Enter file name: ");
@@ -214,49 +216,52 @@ public class Search extends Canvas implements Runnable{
 			break;
 		}
 		
-		System.out.print("\nWhat type of search would you like to run?\n(1) A*\t(2) Weighted A*\t(3) Uniform Cost Search: ");
+		System.out.print("\nWhat type of search would you like to run?\n(1) A*\t(2) Weighted A*\t(3) Uniform Cost Search\t(4) Sequential A*\t(5) Two-Queues A*: ");
 		option = sc.nextInt();
-		long startTime = 0;
-		long endTime = 0;
-		long duration = 0;
-		
+
 		switch(option){
 		case 1:
 			this.weight = 1;
 			System.out.println("\nRegular A* Search started" );
-			startTime = System.nanoTime();
+			Thread.sleep(100);
 			aStarFindPath(grid.sStart, grid.sGoal);
-			endTime = System.nanoTime();
 
-			duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
-			System.out.println("Total Search time was " + duration/1000000 + " miliseconds");
 			break;
 		case 2:
 			System.out.print("Enter weight for Weighted A*: ");
 			this.weight = sc.nextDouble();
 			currentAlgo = "Weighted A*";
 			System.out.println("\nWeighted A* Search with weight "+weight+" started" );
-			startTime = System.nanoTime();
+			Thread.sleep(1000);
 			aStarFindPath(grid.sStart, grid.sGoal);
-			endTime = System.nanoTime();
 
-			duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
-			System.out.println("Total Search time was " + duration/1000000 + " miliseconds");
 			currentAlgo = "Regular A*";
 			weight = 1;
 			tracePathColor = "WHITE";
+			Thread.sleep(100);
 			aStarFindPath(grid.sStart, grid.sGoal);
 			break;
 		case 3:
 			weight = 0;
 			currentAlgo = "Uniform Cost Search";
 			System.out.println("\nUniform Cost Search Started" );
-			startTime = System.nanoTime();
+			Thread.sleep(1000);
 			aStarFindPath(grid.sStart, grid.sGoal);
-			endTime = System.nanoTime();
-
-			duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
 			break;
+		case 4:
+			this.weight = 1;
+			System.out.println("\nSequential A* Search started" );
+			Thread.sleep(100);
+			SequentialMany.aStarFindPath(grid.sStart, grid.sGoal);
+			break;
+		case 5:
+			this.weight = 1;
+			System.out.println("\nTwo-Queues A* Search started" );
+			Thread.sleep(100);
+			ManyQueues.aStarFindPath(grid.sStart, grid.sGoal);
+			break;
+		default:
+			System.out.println("Please enter a valid case");
 		}
 		
 		System.out.print("\n Would you like to get cost information about a cell? (Y/N): ");
@@ -267,15 +272,17 @@ public class Search extends Canvas implements Runnable{
 				System.out.print("\nEnter X and Y value for cell in format X Y (ex: 112 114):  ");
 				int getX = sc.nextInt();
 				int getY = sc.nextInt();
-				Square curr = grid.squares[getX][getY];
+				Square curr = NewGrid.squares[getX][getY];
 				System.out.println("\n("+getX+","+getY+") G Cost: "+curr.gCost+" HCost: "+curr.hCost+" FCost: "+curr.getFCost());
 				System.out.print("Get information about more cells?(Y/N): ");
 				ch = sc.next().toLowerCase().charAt(0);
 			}
 			System.out.println("\nAlright. Bye!");
+			System.exit(0);
 			break;
 		case 'n':
 			System.out.println("\nAlright. Bye!");
+			System.exit(0);
 			break;
 		}
 		sc.close();
@@ -296,9 +303,6 @@ public class Search extends Canvas implements Runnable{
 		ArrayList<Double> weightedLength = new ArrayList<Double>();
 		ArrayList<Double> uniformLength = new ArrayList<Double>();
 
-		long startTime=0;
-		long endTime = 0;
-		long duration = 0;
 		
 		int counter = 0;
 		
@@ -310,33 +314,21 @@ public class Search extends Canvas implements Runnable{
 				counter++;
 				//regular a*
 				this.weight = 1;
-				startTime = System.nanoTime();
 				regularExpanded.add(aStarFindPath(grid.sStart, grid.sGoal));
-				endTime = System.nanoTime();
-				duration = (endTime - startTime)/1000000;  //divide by 1000000 to get milliseconds.
-				regularDuration.add(duration);
 				regularLength.add(this.length);
 				System.out.println("Counter: "+counter);
 				counter++;
 
 				//weighted a*
 				this.weight = 1.2;
-				startTime = System.nanoTime();
 				weightedExpanded.add(aStarFindPath(grid.sStart, grid.sGoal));
-				endTime = System.nanoTime();
-				duration = (endTime - startTime)/1000000;  //divide by 1000000 to get milliseconds.
-				weightedDuration.add(duration);
 				weightedLength.add(this.length);
 				System.out.println("Counter: "+counter);
 				counter++;
 
 				//uniform cost search
 				this.weight = 0;
-				startTime = System.nanoTime();
 				uniformExpanded.add(aStarFindPath(grid.sStart, grid.sGoal));
-				endTime = System.nanoTime();
-				duration = (endTime - startTime)/1000000;  //divide by 1000000 to get milliseconds.
-				uniformDuration.add(duration);
 				weightedLength.add(this.length);
 			}
 		}
