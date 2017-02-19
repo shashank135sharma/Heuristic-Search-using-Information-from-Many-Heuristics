@@ -17,11 +17,13 @@ public class Search extends Canvas implements Runnable{
 	public static final int WIDTH = 1280, HEIGHT = 960; //width and height of frame
 	public NewGrid grid;
 	double weight = 1;
+	double weight2 = 1;
 	String tracePathColor = "GOLD";
 	String currentAlgo = "A*";
 	double length;
 	static boolean isSimulation = false;
-	
+	int currentHeuristic = 2;
+	Square start, goal;
 	//compares fCost for A* algorithm and picks the next box accordingly
 	private Comparator<Square> sorter = new Comparator<Square>(){
 		public int compare(Square b1, Square b2) {
@@ -31,6 +33,156 @@ public class Search extends Canvas implements Runnable{
 			else return 1;
 		}
 	};
+	
+	private Comparator<Square> sorter2 = new Comparator<Square>() {
+		public int compare(Square b1, Square b2) {
+			if(b1.getFCost2(goal, weight) < b2.getFCost2(goal, weight)) return -1;
+			else if(b1.getFCost2(goal, weight) > b2.getFCost2(goal, weight)) return 1;
+			else if(b1.gCosts[b1.currentI] > b2.gCosts[b2.currentI]) return 1;
+			else return 1;
+		}
+	};
+	
+	
+	
+	public Square algorithmTwo(Square start, Square goal) throws InterruptedException {
+		this.start = start;
+		this.goal = goal;
+		for(int i=0; i<NewGrid.squares.length;i++) {
+			for(int j=0; j<NewGrid.squares[0].length; j++) {
+				NewGrid.squares[i][j].sequentialSearchInitialize(5);
+				for(int k=0; k<5; k++) {
+					NewGrid.squares[i][j].gCosts[k] = 0;
+					NewGrid.squares[i][j].hCosts[k] = 0;
+					NewGrid.squares[i][j].fCosts[k] = 0;
+					NewGrid.squares[i][j].bp[k] = null;
+
+				}
+			}
+		}
+		PriorityQueue<Square>[] open = new PriorityQueue[5];
+		ArrayList<Square>[] closed = new ArrayList[5];
+		start.isStart();
+		
+		for(int i=0; i<5; i++) {
+			start.currentI = i;
+			open[i] = new PriorityQueue<Square>(sorter2);
+			closed[i] = new ArrayList<Square>();
+			start.gCosts[i] = 0;
+			goal.gCosts[i] = Double.MAX_VALUE;
+			start.bp = null;
+			goal.bp = null;
+			start.updateHVal2(goal, weight, i);
+			start.getFCost2(goal, weight);
+			open[i].add(start);	
+		}
+		while(minKey(open[0], goal, 0) < Double.MAX_VALUE) {
+			for(int i=0; i<5; i++) {
+				if(minKey(open[i], goal, i) <= weight2*minKey(open[0], goal, 0)) {
+					if(goal.gCosts[i] <= minKey(open[i], goal, i)) {
+						if(goal.gCosts[i] < Double.MAX_VALUE) {
+							goal.currentI = i;
+							goal.bp[i].currentI = i;
+							System.out.println("Exit 1");
+							return goal.bp[i];
+						}
+					} else {
+						if(!open[i].isEmpty()) {
+							Square s = open[i].peek();
+							expandStates(open[i], closed[i], s, i);
+							s.currentI = i;
+							closed[i].add(s);
+							s.squareInClosed();
+						} else {
+							Square s = open[0].peek();
+							expandStates(open[0], closed[0], s, 0);
+							s.currentI = i;
+							closed[0].add(s);
+							s.squareInClosed();
+						}
+					}
+				} else {
+					if(goal.gCosts[0] <= minKey(open[0], goal, 0)) {
+						if(goal.gCosts[0]< Double.MAX_VALUE) {
+							goal.currentI = 0;
+							goal.bp[0].currentI = 0;
+							System.out.println("Exit 2");
+							return goal.bp[0];
+						} else {
+							if(!open[0].isEmpty()) {
+								Square s = open[0].peek();
+								expandStates(open[0], closed[0], s, 0);
+								s.currentI = i;
+								closed[0].add(s);
+								s.squareInClosed();
+							}
+						}
+					}
+				}
+			}
+		}
+		System.out.println("Exit 3");
+		
+		return null;
+	}
+	
+	public double minKey(PriorityQueue<Square> open, Square goal, int counter) {
+		open.peek().getFCost2(goal, counter);
+		return open.peek().fCosts[counter];
+	}
+	
+	public void expandStates(PriorityQueue<Square> open, ArrayList<Square> closed, Square s, int counter){
+		open.remove(s);
+		for(int i=0; i<8; i++) {
+			Square current = s.neighbors[i];
+			if(current!=null) {
+				if(!open.contains(current) && !closed.contains(current)) {
+					if(!current.init) { 
+						System.out.println("Current was not init");
+					}
+					if(current.gCosts!=null) {
+						current.gCosts[counter] = Double.MAX_VALUE;
+					} else {
+						current.gCosts= new double[5];
+						current.gCosts[counter] = Double.MAX_VALUE;
+					}
+					if(current.bp!=null) {
+						current.bp[counter] = null;
+					} else {
+						current.bp= new Square[5];
+						current.bp[counter] =null;
+					}
+				}
+				if(current.gCosts[counter] > s.gCosts[counter] + getDistance(s, current)) {
+					current.gCosts[counter] = s.gCosts[counter] + getDistance(s, current);
+					if(current.bp !=null) {
+						current.bp[counter]=s;
+					}
+					current.currentI = counter;
+					if(!closed.contains(current)) {
+						if(open.contains(current)) {
+							open.remove(current);
+						}
+						current.squareInFringe();
+						open.add(current);
+					}
+				}
+			}
+		}
+	}
+	
+	public double keys(Square s, Square goal,int i) {
+		s.currentI = i;
+		s.updateHVal2(goal, i, currentHeuristic);
+		return s.gCosts[i] + s.hCosts[i];
+	}
+	
+	public void algorithmThree(Square start, Square goal) {
+		this.goal = goal;
+		this.start = start;
+		
+		
+	}
 	
 	public int aStarFindPath(Square start, Square goal) {
 		start.gCost = 0;
@@ -46,8 +198,8 @@ public class Search extends Canvas implements Runnable{
 			if(current.typeOfCell != '2' && current.typeOfCell != 'b') {
 				current.squareInFringe();
 			}
+			current.updateHVal(goal, weight, currentHeuristic);
 			current.updateGVal(start);
-			current.updateHVal(goal, weight);
 			
 			if(current.equals(goal) || getDistance(goal, current) <= 1.41) {
 				double length = 0;
@@ -110,8 +262,8 @@ public class Search extends Canvas implements Runnable{
 			if(doesFringeContain(sPrime, fringe)) {
 				fringe.remove(sPrime);
 			}
+			sPrime.updateHVal(goal, weight, currentHeuristic);
 			sPrime.updateGVal(current);
-			sPrime.updateHVal(goal, weight);
 			sPrime.getFCost();
 			if(sPrime.typeOfCell != '2' && sPrime.typeOfCell != 'b') {
 				sPrime.squareInFringe();
@@ -190,6 +342,16 @@ public class Search extends Canvas implements Runnable{
 		return Math.sqrt(dx*dx + dy*dy);
 	}
 	
+	private void tracePath2(Square sq) {
+		while(sq!= null) {
+			sq.tracePath("GOLD");
+			if(sq.bp==null){
+				System.out.println("Tf");
+				return;
+			}
+			sq=sq.bp[sq.currentI];
+		}
+	}
 	//main call and search method which creates a grid behind the boxes.
 	//I haven't called the A* algorithm yet, just created a GUI of grids
 	//But I am confident it works I looked at many tutorials on YouTube
@@ -216,7 +378,7 @@ public class Search extends Canvas implements Runnable{
 			break;
 		}
 		
-		System.out.print("\nWhat type of search would you like to run?\n(1) A*\t(2) Weighted A*\t(3) Uniform Cost Search\t(4) Sequential A*\t(5) Two-Queues A*: ");
+		System.out.print("\nWhat type of search would you like to run?\n(1) A*\t(2) Weighted A*\t(3) Uniform Cost Search\t(4) Sequential A* \t(5) Two-Queues A*: ");
 		option = sc.nextInt();
 
 		switch(option){
@@ -249,16 +411,20 @@ public class Search extends Canvas implements Runnable{
 			aStarFindPath(grid.sStart, grid.sGoal);
 			break;
 		case 4:
-			this.weight = 1;
+			System.out.print("Enter weight for Sequential A*: ");
+			this.weight = sc.nextDouble();
+			System.out.print("Enter weight2 for Weighted A*: ");
+			this.weight2 = sc.nextDouble();
 			System.out.println("\nSequential A* Search started" );
 			Thread.sleep(100);
-			SequentialMany.aStarFindPath(grid.sStart, grid.sGoal);
+			Square path = algorithmTwo(grid.sStart, grid.sGoal);
+			tracePath2(path);
 			break;
 		case 5:
 			this.weight = 1;
 			System.out.println("\nTwo-Queues A* Search started" );
 			Thread.sleep(100);
-			ManyQueues.aStarFindPath(grid.sStart, grid.sGoal);
+			
 			break;
 		default:
 			System.out.println("Please enter a valid case");

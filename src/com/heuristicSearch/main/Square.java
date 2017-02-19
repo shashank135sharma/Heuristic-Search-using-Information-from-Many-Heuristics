@@ -3,6 +3,7 @@ package com.heuristicSearch.main;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.PriorityQueue;
 
 import javax.swing.JPanel;
 
@@ -25,6 +26,12 @@ public class Square extends JPanel{
 	Square parent = null;
 	Dimension dim = getSize();
 	public double dimW = dim.getHeight();
+	Square[] bp = new Square[5];
+	double[] gCosts;
+	double[] hCosts;
+	double[] fCosts;
+	int currentI=0;
+	boolean init;
 	
 	//default to white
 	public Square(){
@@ -34,13 +41,58 @@ public class Square extends JPanel{
 		this.currColor = "GREEN";
 	}
 	
-	public void updateHVal(Square goal, double weight) {
-		this.hCost = Math.abs(getDistance2(this,goal)) * weight;
-		fCost = this.gCost + this.hCost;
+	public void sequentialSearchInitialize(int i) {
+		gCosts = new double[i];
+		hCosts = new double[i];
+		fCosts = new double[i];
+		init = true;
 	}
 	
+	public void updateHVal(Square goal, double weight, int hNum) {
+		switch(hNum) {
+		case 1: //octile distance
+			this.hCost = Math.abs(getDistance2(this,goal)) * weight;
+			break;
+		case 0: //Manhattan distance / 4
+			this.hCost = (Math.abs(this.x-goal.x) + Math.abs(this.y - goal.y))/4 * weight;
+			break;
+		case 2: //Euclidian distance
+			this.hCost = Math.sqrt(Math.pow(Math.abs(this.x-goal.x),2) + Math.pow(Math.abs(this.y-goal.y), 2)) * weight;
+			break;
+		case 3: //Uniform Cost Diagonal Heuristic
+			this.hCost = Math.max(Math.abs(x-goal.x), Math.abs(y-goal.y)) * weight;
+			break;
+		case 4: //0 Distance
+			this.hCost = 0;
+			break;
+		}
+		fCost = this.gCost + hCost;
+	}
+	
+	public void updateHVal2(Square goal, double weight, int hNum) {
+		switch(hNum) {
+		case 1: //octile distance
+			this.hCosts[currentI] = Math.abs(getDistance2(this,goal)) * weight;
+			break;
+		case 0: //Manhattan distance / 4
+			this.hCosts[currentI] = (Math.abs(this.x-goal.x) + Math.abs(this.y - goal.y))/4.0 * weight;
+			break;
+		case 2: //Euclidian distance
+			this.hCosts[currentI] = Math.sqrt(Math.pow(Math.abs(this.x-goal.x),2) + Math.pow(Math.abs(this.y-goal.y), 2)) * weight;
+			break;
+		case 3: //Uniform Cost Diagonal Heuristic
+			this.hCosts[currentI] = (double) Math.max(Math.abs(x-goal.x), Math.abs(y-goal.y)) * weight;
+			break;
+		case 4: //0 Distance
+			this.hCosts[currentI] = 0.0;
+			break;
+		}
+		fCosts[currentI] = this.gCosts[currentI] + this.hCosts[currentI];
+	}
+
+	
 	public void updateGVal(Square start) {
-		this.hCost = Math.abs(getDistance(start));
+		//this.hCost = Math.abs(getDistance(start));
 		fCost = this.gCost + this.hCost; 
 	}
 	
@@ -49,12 +101,17 @@ public class Square extends JPanel{
 		return fCost;
 	}
 	
+	public double getFCost2(Square goal, double weight){
+		updateHVal2(goal, weight, currentI);
+		fCosts[currentI]= this.gCosts[currentI] + this.hCosts[currentI];
+		return fCosts[currentI];
+	}
+	
 	private double getDistance2(Square square1, Square goal){
-		double D = 1;
 		double D2 = Math.sqrt(2);
 		double dx = Math.abs(square1.x - goal.x);
 		double dy = Math.abs(square1.y - goal.y);
-		return D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy);
+		return (dx + dy) + (D2 - 2) * Math.min(dx, dy);
 	}
 	
 	private double getDistance(Square goal){

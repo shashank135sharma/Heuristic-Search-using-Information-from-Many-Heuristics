@@ -97,6 +97,8 @@ public class NewGrid{
 	    	Random rand = new Random();
 	    	int randX = 0;
 	    	int randY = 0;
+	    	int length = 0;
+	    	
 	    	if(side == "left" || side == "Left"){
 	    		randX = rand.nextInt(120);
 	    		randY = 0;
@@ -110,12 +112,14 @@ public class NewGrid{
 	    		randX = 119;
 	    		randY = rand.nextInt(160);
 	    	}
+	    	//grid[randX][randY].addHighway();
 	    	
 	    	int random;
 	    	ArrayList<Square> currentPath = new ArrayList<Square>();
 	    	for(int i=0; i<21; i++) {
 	    		if(!grid[randX][randY].hasHighway) {
 		    		grid[randX][randY].addHighway();
+		    		length++;
 		    		currentPath.add(grid[randX][randY]);
 		    		if(side == "left" || side == "Left"){
 			    		randY++;
@@ -137,10 +141,21 @@ public class NewGrid{
 	    		if(random>=4) { //keep moving away for 20 blocks
 	    			for(int i=0; i<20; i++) {
 	    				if(isSquareBoundry(randX, randY)) {
-	    					return true;
+	    					if((randX<120 && randX>=0) && (randY<160 && randY>=0)) {
+	    						grid[randX][randY].addHighway();
+	    					}
+	    					if(length>=100) {
+	    						return true;
+	    					}
+	    					if((randX<120 && randX>=0) && (randY<160 && randY>=0)) {
+		    					grid[randX][randY].removeHighway();
+	    					}	    					
+	    					removeHighways(currentPath, grid);
+	    					return false;
 	    				}
 			    		if(!grid[randX][randY].hasHighway) {
 				    		grid[randX][randY].addHighway();
+				    		length++;
 				    		currentPath.add(grid[randX][randY]);
 				    		if(side == "left" || side == "Left"){
 					    		randY++;
@@ -160,10 +175,22 @@ public class NewGrid{
 	    		} else if(random>=2 && random<4) { //move right
 	    			for(int i=0; i<20; i++) {
 	    				if(isSquareBoundry(randX, randY)) {
-	    					return true;
+	    					if((randX<120 && randX>=0) && (randY<160 && randY>=0)) {
+	    						grid[randX][randY].addHighway();
+	    					}
+	    					if(length >= 100) {
+		    					return true;
+	    					} else {
+		    					if((randX<120 && randX>=0) && (randY<160 && randY>=0)) {
+			    					grid[randX][randY].removeHighway();
+		    					}	    						
+		    					removeHighways(currentPath, grid);
+	    						return false;
+	    					}
 	    				}
 			    		if(!grid[randX][randY].hasHighway) {
 				    		grid[randX][randY].addHighway();
+				    		length++;
 				    		currentPath.add(grid[randX][randY]);
 				    		if(side == "left" || side == "Left"){
 					    		randX++;
@@ -182,10 +209,22 @@ public class NewGrid{
 	    		} else { //move left
 	    			for(int i=0; i<20; i++) {
 	    				if(isSquareBoundry(randX, randY)) {
-	    					return true;
+	    					if((randX<120 && randX>=0) && (randY<160 && randY>=0)) {
+	    						grid[randX][randY].addHighway();
+	    					}
+	    					if(length>=100) {
+		    					return true;
+	    					} else {
+		    					if((randX<120 && randX>=0) && (randY<160 && randY>=0)) {
+			    					grid[randX][randY].removeHighway();
+		    					}
+	    						removeHighways(currentPath, grid);
+	    						return false;
+	    					}
 	    				}
 			    		if(!grid[randX][randY].hasHighway) {
 				    		grid[randX][randY].addHighway();
+				    		length++;
 				    		currentPath.add(grid[randX][randY]);
 				    		if(side == "left" || side == "Left"){
 					    		randX--;
