@@ -32,6 +32,7 @@ public class Square extends JPanel{
 	double[] fCosts;
 	int currentI=0;
 	boolean init;
+	Square bp2 = null;
 	
 	//default to white
 	public Square(){
@@ -106,6 +107,13 @@ public class Square extends JPanel{
 		fCosts[currentI]= this.gCosts[currentI] + this.hCosts[currentI];
 		return fCosts[currentI];
 	}
+	
+	public double getFCost3(Square goal, double weight){
+		updateHVal2(goal, weight, currentI);
+		fCost= this.gCost + this.hCosts[currentI];
+		return fCost;
+	}
+
 	
 	private double getDistance2(Square square1, Square goal){
 		double D2 = Math.sqrt(2);
